@@ -1,0 +1,11 @@
+Acceleration Due to Gravity Near Earth, 9.81
+Gravitational Constant, 6.67 * 10^-11
+Radius of Earth, 6.37 * 10^6
+Mass of Earth, 5.97 * 10^24
+Elementary Charge, 1.60 * 10^-19
+Coulomb’s Law Constant, 8.99 * 10^9
+Electron Volt, 1.60 * 10^-19
+Index of Refraction of Air, 1.00
+Speed of Light in Vacuum, 3.00 * 10^8
+Planck’s Constant, 6.63 * 10^–34, 4.14 * 10^-15
+Atomic Mass Unit, 1.66 *10^-27
