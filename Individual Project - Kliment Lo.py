@@ -5,7 +5,7 @@ title: Physics 30 calculator
 author: Kliment Lo
 date: December 13, 2022
 '''
-
+import math
 # --- INPUTS --- #
 conversionUnits = {
     "a" : 0.000000000000000001,
@@ -23,6 +23,31 @@ conversionUnits = {
     "G" : 1000000000,
     "T" : 1000000000000
 }
+
+getEquation = {
+    #Velocity
+    "11" : ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t"],
+    # Initial Velocity
+    "12" : ["d = vᵢt + ½at²", "vբ = vᵢ² + 2ad", "d = [(vբ + vᵢ) / 2]t"],
+    # Final Velocity
+    "13" : ["d = vբt - ½at² ", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"],
+    # Centripetal Velocity
+    "14" : ["|v꜀|=  2πr/T"],
+    # Acceleration
+    "15" :["aₐᵥₑ = △v/△t"],
+    # Centripetal Acceleration
+    "16" : ["|a꜀| = v²/r" , "|a꜀|= (4π²r)/T²"],
+    # Distance
+    "17" : ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]", "vբ = vᵢ² + 2ad"]    ,
+    # Time
+    "18" : """What equation would you like to use? 
+1. vₐᵥₑ = △d/△t  
+2. aₐᵥₑ = △v/△t  
+3. d = vᵢt + ½at²
+4. d = vբt - ½at²      
+5. d = [(vբ + vᵢ) / 2]t
+""",
+    }
 
 def readFile():
     '''
@@ -72,6 +97,9 @@ def selectVariable():
     :return: int)
     '''
     value = input("""
+    
+    
+    
 What unit would you like to solve from?
 1. Kinematics
 2. Dynamics
@@ -86,7 +114,11 @@ What unit would you like to solve from?
         value = int(value)
         if value > 0 and value < 8:
             if value == 1:
-                variable = input("""What variable do you want to solve for?
+                variable = input("""
+                
+                      
+                
+What variable do you want to solve for?
 1. Velocity (v)
 2. Initial Velocity (vᵢ)
 3. Final Velocity (vբ)
@@ -99,8 +131,8 @@ What unit would you like to solve from?
 > """)
                 if variable.isnumeric():
                     variable = int(variable)
-                    if variable > 0 and variable < 7:
-                        return variable
+                    if variable > 0 and variable < 9:
+                        return str(value), str(variable)
 
             elif value == 2:
                 pass
@@ -137,6 +169,20 @@ What unit would you like to solve from?
         print("Please enter a valid number! ")
         return selectVariable()
 
+def selectEquation(unitValue):
+    '''
+    selects the equation of their choice
+    :return:
+    '''
+    unitValue = unitValue[0] + unitValue[1] # adds the unit number and variable number, giving it its own unique number code (e.g 1.Kinematics + 1.Velocity = 11
+    equation = input(""" 
+    
+    
+    
+""" + getEquation[unitValue] + """
+> 
+""")
+
 # --- PROCESSING --- #
 
 # --- OUTPUTS --- #
@@ -145,7 +191,7 @@ def intro():
     introduction to the program and what it does
     :return: (none)
     '''
-    print("Welcome to the Physics 30 calculator! Choose what variable you would like to solve for, and we will do it for you!")
+    print("Welcome to the Physics 30 calculator! Choose what variable you would like to solve for, and we will do it for you! You can input any type of unit, and it will print it out into the regular one")
 
 def formulaSheet():
     '''
@@ -192,7 +238,9 @@ if __name__ == "__main__":
     while True:
         option = menu()
         if option == 1:
-            choice = selectVariable()
+            choice = selectVariable() # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variable s
+            equation = selectEquation(choice)
+
         if option == 2:
             pass
         if option == 3:
