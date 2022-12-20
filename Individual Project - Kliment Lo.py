@@ -25,6 +25,7 @@ conversionUnits = {
 }
 
 getEquation = {
+    # What the numbers mean: (unit) (Variable they want to solve) (chosen equation) (e.g 112, (kinematics)(velocity)(aₐᵥₑ = △v/△t)
     #Velocity
     "11" : ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t"],
     # Initial Velocity
@@ -40,14 +41,38 @@ getEquation = {
     # Distance
     "17" : ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]", "vբ = vᵢ² + 2ad"]    ,
     # Time
-    "18" : """What equation would you like to use? 
-1. vₐᵥₑ = △d/△t  
-2. aₐᵥₑ = △v/△t  
-3. d = vᵢt + ½at²
-4. d = vբt - ½at²      
-5. d = [(vբ + vᵢ) / 2]t
-""",
-    }
+    "18" : ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at", "d = vբt - ½at²","d = [(vբ + vᵢ) / 2]t"],
+    ### Gets the actual equation, like the one we will use to help calculate their result
+    # Velocity
+    "111": ["Distance? ", "Time? "],
+    "112": ["Acceleration?", "Time? "],
+    # Initial Velocity
+    "121" : [],
+    "122" : [],
+    "123" : [],
+    # Final Velocity
+    "131" : [],
+    "132" : [],
+    "133" : [],
+    # Centripetal Velocity
+    "141" : [],
+    # Acceleration
+    "151" : [],
+    # Centripetal Acceleration
+    "161" : [],
+    "162" : [],
+    # Distance
+    "171" : [],
+    "172" : [],
+    "173" : [],
+    "174" : [],
+    # Time
+    "181" : [],
+    "182" : [],
+    "183" : [],
+    "184" : [],
+    "185" : []
+}
 
 def readFile():
     '''
@@ -97,9 +122,6 @@ def selectVariable():
     :return: int)
     '''
     value = input("""
-    
-    
-    
 What unit would you like to solve from?
 1. Kinematics
 2. Dynamics
@@ -114,10 +136,7 @@ What unit would you like to solve from?
         value = int(value)
         if value > 0 and value < 8:
             if value == 1:
-                variable = input("""
-                
-                      
-                
+                variable = input("""          
 What variable do you want to solve for?
 1. Velocity (v)
 2. Initial Velocity (vᵢ)
@@ -174,15 +193,35 @@ def selectEquation(unitValue):
     selects the equation of their choice
     :return:
     '''
-    unitValue = unitValue[0] + unitValue[1] # adds the unit number and variable number, giving it its own unique number code (e.g 1.Kinematics + 1.Velocity = 11
-    equation = input(""" 
-    
-    
-    
-""" + getEquation[unitValue] + """
-> 
+    variables = []
+    numberCombination = unitValue[0] + unitValue[1] # adds the unit number and variable number, giving it its own unique nu
+    equationList = getEquation[numberCombination]
+    print("""
+Which equation would you like to use? """)
+    for i in range(len(equationList)):
+        print(f"{i+1}. {equationList[i]} ")
+        if i + 1 == len(equationList):
+            equation = input("""
+> """)
+            if equation.isnumeric():
+                equation = int(equation)
+                if equation > 0 and equation <= len(equationList):
+                    numberCombination = numberCombination + f"{equation}"
+                else:
+                    print("Invalid option! Select one of the equations listed above. ")
+                    return selectEquation(unitValue)
+            else:
+                print("Invalid option! Select one of the equations listed above. ")
+                return selectEquation(unitValue)
+    getVariables = getEquation[numberCombination]
+    print("""Include units with a space separating them. (e.g 956 nm) 
 """)
+    for i in range(len(getVariables)):
+        variables.append(input(f"{getVariables[i]} "))
 
+    variables.append(numberCombination)
+
+    return variables
 # --- PROCESSING --- #
 
 # --- OUTPUTS --- #
@@ -240,7 +279,7 @@ if __name__ == "__main__":
         if option == 1:
             choice = selectVariable() # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variable s
             equation = selectEquation(choice)
-
+            print(equation) # The last number in the list is the thing that identifies what they're solving for
         if option == 2:
             pass
         if option == 3:
