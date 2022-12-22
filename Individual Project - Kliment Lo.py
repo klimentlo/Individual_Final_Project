@@ -39,7 +39,7 @@ getEquation = {
     # Centripetal Acceleration
     "16" : ["|a꜀| = v²/r" , "|a꜀|= (4π²r)/T²"],
     # Distance
-    "17" : ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]", "vբ = vᵢ² + 2ad"]    ,
+    "17" : ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"]    ,
     # Time
     "18" : ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at", "d = vբt - ½at²","d = [(vբ + vᵢ) / 2]t"],
     ### Gets the actual equation, like the one we will use to help calculate their result
@@ -47,31 +47,31 @@ getEquation = {
     "111": ["Distance? ", "Time? "],
     "112": ["Acceleration?", "Time? "],
     # Initial Velocity
-    "121" : [],
-    "122" : [],
-    "123" : [],
+    "121" : ["Distance? ", " Time? ", "Acceleration? "],
+    "122" : ["Final Velocity? ", "Acceleration? ", "Distance? "],
+    "123" : ["Distance? ", "Final Velocity? ", "Time? "],
     # Final Velocity
-    "131" : [],
-    "132" : [],
-    "133" : [],
+    "131" : ["Distance? ", "Time? ", "Acceleration? "],
+    "132" : ["Distance? ", "Initial Velocity? ", "Time? "],
+    "133" : ["Initial Velocity? ", "Acceleration? ", "Distance? "],
     # Centripetal Velocity
-    "141" : [],
+    "141" : ["Radius? ", "Period? "],
     # Acceleration
-    "151" : [],
+    "151" : ["Velocity? ", "Time? "],
     # Centripetal Acceleration
-    "161" : [],
-    "162" : [],
+    "161" : ["Velocity? ", "Radius? "],
+    "162" : ["Radius? ", "Period? "],
     # Distance
-    "171" : [],
-    "172" : [],
-    "173" : [],
-    "174" : [],
+    "171" : ["Initial Velocity? ", "Time? ", "Acceleration? "],
+    "172" : ["Final Velocity? ", "Time? ", "Acceleration? "],
+    "173" : ["Final Velocity? ", "Initial Velocity? ", "Time? "],
+    "174" : ["Final Velocity? ", "Initial Velocity? ", "Acceleration? "],
     # Time
-    "181" : [],
-    "182" : [],
-    "183" : [],
-    "184" : [],
-    "185" : []
+    "181" : ["Velocity? ", "Distance? "],
+    "182" : ["Acceleration? ", "Velocity"],
+    "183" : ["Distance? ", "Initial Velocity", "Acceleration? "],
+    "184" : ["Distance? ", "Final Velocity? ", "Acceleration? "],
+    "185" : ["Distance? ", "Final Velocity? ", "Initial Velocity? "]
 }
 
 def readFile():
@@ -223,6 +223,12 @@ Which equation would you like to use? """)
 
     return variables
 # --- PROCESSING --- #
+def solveEquation(equation):
+    '''
+    Solves the equations
+    :param equation: (list).
+    :return:
+    '''
 
 # --- OUTPUTS --- #
 def intro():
@@ -280,6 +286,7 @@ if __name__ == "__main__":
             choice = selectVariable() # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variable s
             equation = selectEquation(choice)
             print(equation) # The last number in the list is the thing that identifies what they're solving for
+            solveEquation(equation)
         if option == 2:
             pass
         if option == 3:
