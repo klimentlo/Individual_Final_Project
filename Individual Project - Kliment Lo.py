@@ -1,4 +1,4 @@
-#Individual Project - Kliment Lo
+# Individual Project - Kliment Lo
 
 '''
 title: Physics 30 calculator
@@ -6,73 +6,9 @@ author: Kliment Lo
 date: December 13, 2022
 '''
 import math
-# --- INPUTS --- #
-conversionUnits = {
-    "a" : 0.000000000000000001,
-    "f" : 0.000000000000001,
-    "p" : 0.000000000001,
-    "n" : 0.000000001,
-    "μ" : 0.000001,
-    "m" : 0.001,
-    "c" : 0.01,
-    "d" : 0.1,
-    "da" : 10,
-    "h" : 100,
-    "k" : 1000,
-    "M" : 1000000,
-    "G" : 1000000000,
-    "T" : 1000000000000
-}
 
-getEquation = {
-    # What the numbers mean: (unit) (Variable they want to solve) (chosen equation) (e.g 112, (kinematics)(velocity)(aₐᵥₑ = △v/△t)
-    #Velocity
-    "11" : ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t"],
-    # Initial Velocity
-    "12" : ["d = vᵢt + ½at²", "vբ = vᵢ² + 2ad", "d = [(vբ + vᵢ) / 2]t"],
-    # Final Velocity
-    "13" : ["d = vբt - ½at² ", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"],
-    # Centripetal Velocity
-    "14" : ["|v꜀|=  2πr/T"],
-    # Acceleration
-    "15" :["aₐᵥₑ = △v/△t"],
-    # Centripetal Acceleration
-    "16" : ["|a꜀| = v²/r" , "|a꜀|= (4π²r)/T²"],
-    # Distance
-    "17" : ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"]    ,
-    # Time
-    "18" : ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at", "d = vբt - ½at²","d = [(vբ + vᵢ) / 2]t"],
-    ### Gets the actual equation, like the one we will use to help calculate their result
-    # Velocity
-    "111": ["Distance? ", "Time? "],
-    "112": ["Acceleration?", "Time? "],
-    # Initial Velocity
-    "121" : ["Distance? ", " Time? ", "Acceleration? "],
-    "122" : ["Final Velocity? ", "Acceleration? ", "Distance? "],
-    "123" : ["Distance? ", "Final Velocity? ", "Time? "],
-    # Final Velocity
-    "131" : ["Distance? ", "Time? ", "Acceleration? "],
-    "132" : ["Distance? ", "Initial Velocity? ", "Time? "],
-    "133" : ["Initial Velocity? ", "Acceleration? ", "Distance? "],
-    # Centripetal Velocity
-    "141" : ["Radius? ", "Period? "],
-    # Acceleration
-    "151" : ["Velocity? ", "Time? "],
-    # Centripetal Acceleration
-    "161" : ["Velocity? ", "Radius? "],
-    "162" : ["Radius? ", "Period? "],
-    # Distance
-    "171" : ["Initial Velocity? ", "Time? ", "Acceleration? "],
-    "172" : ["Final Velocity? ", "Time? ", "Acceleration? "],
-    "173" : ["Final Velocity? ", "Initial Velocity? ", "Time? "],
-    "174" : ["Final Velocity? ", "Initial Velocity? ", "Acceleration? "],
-    # Time
-    "181" : ["Velocity? ", "Distance? "],
-    "182" : ["Acceleration? ", "Velocity"],
-    "183" : ["Distance? ", "Initial Velocity", "Acceleration? "],
-    "184" : ["Distance? ", "Final Velocity? ", "Acceleration? "],
-    "185" : ["Distance? ", "Final Velocity? ", "Initial Velocity? "]
-}
+
+# --- INPUTS --- #
 
 def readFile():
     '''
@@ -87,6 +23,7 @@ def readFile():
             fileList[i] = fileList[i][:-1]
         fileList[i] = fileList[i].split(",")
     return fileList
+
 
 def menu():
     '''
@@ -105,7 +42,7 @@ Please choose an option:
     if option.isnumeric():
         option = int(option)
         if option > 0 and option < 6:
-           return option
+            return option
         else:
             print("Please enter a valid number! ")
             return menu()
@@ -113,30 +50,18 @@ Please choose an option:
         print("Please enter a valid number! ")
         return menu()
 
+
 def chooseCalculation():
     print("hi")
+
 
 def selectVariable():
     '''
     user decides what variable they want to solve for
     :return: int)
     '''
-    value = input("""
-What unit would you like to solve from?
-1. Kinematics
-2. Dynamics
-3. Momentum and Energy
-4. Waves
-5. Electricity and Magnetism
-6. Atomic Physics
-7. Quantum Mechanics and Nuclear Physics
-
-> """)
-    if value.isnumeric():
-        value = int(value)
-        if value > 0 and value < 8:
-            if value == 1:
-                variable = input("""          
+    value = 1
+    variable = input("""          
 What variable do you want to solve for?
 1. Velocity (v)
 2. Initial Velocity (vᵢ)
@@ -148,80 +73,110 @@ What variable do you want to solve for?
 8. Time (t)
 
 > """)
-                if variable.isnumeric():
-                    variable = int(variable)
-                    if variable > 0 and variable < 9:
-                        return str(value), str(variable)
-
-            elif value == 2:
-                pass
-                variable = input("""What variable do you want to solve for?
-
-> """)
-            elif value == 3:
-                pass
-                variable = input("""What variable do you want to solve for?
-> """)
-            elif value == 4:
-                pass
-                variable = input("""What variable do you want to solve for?
-> """)
-            elif value == 5:
-                pass
-                variable = input("""What variable do you want to solve for?
-> """)
-            elif value == 6:
-                pass
-                variable = input("""What variable do you want to solve for?
-> """)
-            elif value == 7:
-                pass
-                variable = input("""What variable do you want to solve for?
-
-> """)
-            else:
-                print("That is not a valid option! ")
-                return selectVariable()
+    if variable.isnumeric():
+        variable = int(variable)
+        if variable > 0 and variable < 9:
+            return str(value), str(variable)
         else:
             print("Please enter a valid option")
+            return selectVariable()
     else:
         print("Please enter a valid number! ")
         return selectVariable()
+
 
 def selectEquation(unitValue):
     '''
     selects the equation of their choice
     :return:
     '''
-    variables = []
-    numberCombination = unitValue[0] + unitValue[1] # adds the unit number and variable number, giving it its own unique nu
-    equationList = getEquation[numberCombination]
+    global numberCombination
+    numberCombination = unitValue[0] + unitValue[1]  # adds the unit number and variable number, giving it its own unique number. This displays which value they want to solve for
+    equationList = getEquation[numberCombination] # Use the number combination to detect what they want to solve for, which assigns the list of possible equations they can use
     print("""
 Which equation would you like to use? """)
     for i in range(len(equationList)):
-        print(f"{i+1}. {equationList[i]} ")
-        if i + 1 == len(equationList):
+        print(f"{i + 1}. {equationList[i]} ") # prints out the possible formulas
+        if i + 1 == len(equationList): # once it displays all the formulas. If there isn't the + 1, it'll never meet the same length. (E.g. ["Hello", "World"]. i = 1. len = 2]
             equation = input("""
-> """)
-            if equation.isnumeric():
-                equation = int(equation)
-                if equation > 0 and equation <= len(equationList):
-                    numberCombination = numberCombination + f"{equation}"
-                else:
+> """) # selects the formula they want
+            if equation.isnumeric(): # if its a number
+                equation = int(equation) # make it an integer
+                if equation > 0 and equation <= len(equationList): # if they chose one of the possible formulas
+                    numberCombination = numberCombination + f"{equation}" # adds another number to it's unique number code
+                else: # if it isnt one of the possible options
                     print("Invalid option! Select one of the equations listed above. ")
                     return selectEquation(unitValue)
-            else:
+            else: # if it wasn't a number in the first place
                 print("Invalid option! Select one of the equations listed above. ")
                 return selectEquation(unitValue)
-    getVariables = getEquation[numberCombination]
-    print("""Include units with a space separating them. (e.g 956 nm) 
-""")
-    for i in range(len(getVariables)):
-        variables.append(input(f"{getVariables[i]} "))
+    getVariables = getEquation[numberCombination]# Extracts the variables required to solve the formula they wanna use
+    print("""IMPORTANT. Separate the numbers and units with a space! (e.g 30 cm)
+    """)
+    return getVariables
 
-    variables.append(numberCombination)
+def getValues(missingVariables):
+    '''
+    Asks the user the values, and also gets the units
+    :param equation: array of what the formula needs to solve for the thing
+    :return: (list of values) e.g (30, 25, 13)
+    '''
+    global numberCombination
+    unitList = []
+    variables = []
+    # Requesting Values
+    for i in range(len(missingVariables)):  # for the length of the list of variables [Distance? ,Time? , Final Velocity? ]
+        variables.append(input(f"{missingVariables[i]} "))  # it appends what the user inputted
+        variables[i] = variables[i].split(" ")
+        reRun = True
+        unit = ""
+    # Checks if formatting is Correct
+        if len(variables[i]) == 2: # if they did the formatting correctly e.g("90", "cm")
+            try:
+                variables[i][0] = float(variables[i][0]) # try to make it a float
+            except: # but if turns out its a word
+                print("Please enter a number! ")
+                return getValues(missingVariables) # returns to start, making them reinput the value
+        # Running through the units
+            for j in range(len(variables[i][-1])): # for number of letters in the unit section
+                unit += variables[i][-1][j] # unit adds an additioal unit letter to it
+                if reRun == True: # if it wants to rerun this
+                    try:
+                        if unitConversions[unit]:
+                            reRun = False
+                            if unit == "d" or unit == "m":
+                                if unit == "d":
+                                    try:
+                                        unitCheck = unit + variables[i][-1][j + 1]
+                                        unitList.append(unitConversions[unitCheck])
+                                    except (KeyError, IndexError):
+                                        unitList.append(unitConversions[unit])
+                                if unit == "m":
+                                    try:
+                                        slash = variables[i][-1][j + 1]
+                                        if slash == "/":
+                                            unitList.append(1)
+                                        else:
+                                            unitList.append(unitConversions[unit])
+                                    except IndexError:
+                                        unitList.append(1)
+                            else:
+                                unitList.append(unitConversions[unit])
+                    except KeyError:
+                        if j+1 == len(variables[i][-1]):
+                            print("Those were invalid units! Try again. ")
+                            reRun = False
+                            getValues(missingVariables)
+                        pass
+        else:
+            print("Please include a space between the numbers and units! ")
+            getValues(missingVariables)
+    returnVariables = []
+    for i in range(len(variables)):
+        returnVariables.append(variables[i][0])
+    returnVariables.append(numberCombination)
+    return (unitList, returnVariables)
 
-    return variables
 # --- PROCESSING --- #
 def solveEquation(equation):
     '''
@@ -229,6 +184,79 @@ def solveEquation(equation):
     :param equation: (list).
     :return:
     '''
+    print(equation)
+    for i in range(len(equation[0])):
+        equation[1][i] = equation[0][i] * equation[1][i]
+    answer = actuallySolveIt(equation[1])
+    print(answer)
+
+def actuallySolveIt(variable):
+    '''
+
+    :param variable:
+    :return:
+    '''
+    for i in range(len(variable)-1):
+        variable[i] = float(variable[i])
+
+    if len(variable) == 3:
+        getFormula1 = {
+            # Velocity
+            "111": variable[0] / variable[1],
+            "112": variable[0] * variable[1],
+            # Centripetal Velocity
+            "141": (2 * math.pi * variable[0] / variable[1]),
+            # Acceleration
+            "151": variable[0] / variable[1],
+            # Centripetal Acceleration
+            "161": variable[0] ** 2 / variable[1],
+            "162": 4 * (3.1415926535 ** 2) * variable[0] / variable[1],
+            # Distance
+
+            # Time
+            "181": variable[1] / variable[0],
+            "182": variable[1] / variable[0],
+
+        }
+        answer = getFormula1[variable[-1]]
+
+    if int(len(variable)) == 4:
+        getFormula2 = {
+            # Initial Velocity
+            "121": (variable[0] - 0.5 * variable[2] * variable[1] ** 2) / variable[1],
+            "122": (variable[0] - 2 * variable[1] * variable[2]),
+            "123": (variable[0] / variable[2] * 2 - variable[1]),
+            # Final Velocity
+            "131": (variable[0] - 0.5 * variable[2] * variable[1] ** 2) / variable[1],
+            "132": (variable[0] / variable[2] * 2 - variable[1]),
+            "133": (variable[0] ** 2 + 2 * variable[1] * variable[2]),
+            #Distance
+            "171": variable[0] * variable[1] + 0.5 * variable[2] * variable[1] ** 2,
+            "172": variable[0] * variable[1] - 0.5 * variable[2] * variable[1] ** 2,
+            "173": ((variable[0] + variable[1]) / 2) / variable[2],
+            "174": (variable[0] - variable[1] ** 2) / (2 * variable[2]),
+            #Time
+            "183": variable[1] ** 2 - (2 * variable[2] * variable[0]),
+            "184": variable[1] ** 2 - (2 * variable[2] * variable[0]),
+            "185": variable[0] / ((variable[1] + variable[2]) / 2)
+        }
+        answer = getFormula2[variable[-1]]
+        print(f"Answer: {answer}")
+        if variable[-1] == "122":
+            if answer < 0:
+                answer = answer * -1
+                print("Replace me with a thing indicating it's south or something")
+            answer = math.sqrt((answer))
+        if variable[-1] == "183" or variable[-1] == "184":
+            try:
+                answer1 = (-variable[1] + math.sqrt(answer)) / variable[2]
+                answer2 = (-variable[1] - math.sqrt(answer)) / variable[2]
+                print(f"Answer 1: {answer1}")
+                print(f"Answer 2: {answer2}")
+            except ValueError:
+                print("That's Not possible little boy :)")
+    return answer
+
 
 # --- OUTPUTS --- #
 def intro():
@@ -236,7 +264,9 @@ def intro():
     introduction to the program and what it does
     :return: (none)
     '''
-    print("Welcome to the Physics 30 calculator! Choose what variable you would like to solve for, and we will do it for you! You can input any type of unit, and it will print it out into the regular one")
+    print(
+        "Welcome to the Kinematics Calculator! Choose what variable you would like to solve for, and we will do it for you! You can input any type of unit, and it will print it out into the regular one")
+
 
 def formulaSheet():
     '''
@@ -271,22 +301,93 @@ def formulaSheet():
     |    P = W/t                                                                                                                   Circle = 2πr      |
     |                                                                                                                                                |
     --------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                
-                                                                                                                    
+
     """)
     menu = input("Press enter to return to menu. ")
+
+
+### --- DICTIONARY --- ###
+
+unitConversions = {
+    "a": 0.000000000000000001,
+    "f": 0.000000000000001,
+    "p": 0.000000000001,
+    "n": 0.000000001,
+    "μ": 0.000001,
+    "m": 0.001,
+    "c": 0.01,
+    "d": 0.1,
+    "da": 10,
+    "h": 100,
+    "k": 1000,
+    "M": 1000000,
+    "G": 1000000000,
+    "T": 1000000000000,
+    "s": 1,
+}
+
+getEquation = {
+    # What the numbers mean: (unit) (Variable they want to solve) (chosen equation) (e.g 112, (kinematics)(velocity)(aₐᵥₑ = △v/△t)
+    # Velocity
+    "11": ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t"],
+    # Initial Velocity
+    "12": ["d = vᵢt + ½at²", "vբ = vᵢ² + 2ad", "d = [(vբ + vᵢ) / 2]t"],
+    # Final Velocity
+    "13": ["d = vբt - ½at² ", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"],
+    # Centripetal Velocity
+    "14": ["|v꜀|=  2πr/T"],
+    # Acceleration
+    "15": ["aₐᵥₑ = △v/△t"],
+    # Centripetal Acceleration
+    "16": ["|a꜀| = v²/r", "|a꜀|= (4π²r)/T²"],
+    # Distance
+    "17": ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"],
+    # Time
+    "18": ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t"],
+    ### Gets the actual equation, like the one we will use to help calculate their result
+    # Velocity
+    "111": ["Distance? ", "Time? "],
+    "112": ["Acceleration?", "Time? "],
+    # Initial Velocity
+    "121": ["Distance? ", "Time? ", "Acceleration? "],
+    "122": ["Final Velocity? ", "Acceleration? ", "Distance? "],
+    "123": ["Distance? ", "Final Velocity? ", "Time? "],
+    # Final Velocity
+    "131": ["Distance? ", "Time? ", "Acceleration? "],
+    "132": ["Distance? ", "Initial Velocity? ", "Time? "],
+    "133": ["Initial Velocity? ", "Acceleration? ", "Distance? "],
+    # Centripetal Velocity
+    "141": ["Radius? ", "Period? "],
+    # Acceleration
+    "151": ["Velocity? ", "Time? "],
+    # Centripetal Acceleration
+    "161": ["Velocity? ", "Radius? "],
+    "162": ["Radius? ", "Period? "],
+    # Distance
+    "171": ["Initial Velocity? ", "Time? ", "Acceleration? "],
+    "172": ["Final Velocity? ", "Time? ", "Acceleration? "],
+    "173": ["Final Velocity? ", "Initial Velocity? ", "Time? "],
+    "174": ["Final Velocity? ", "Initial Velocity? ", "Acceleration? "],
+    # Time
+    "181": ["Velocity? ", "Distance? "],
+    "182": ["Acceleration? ", "Velocity"],
+    "183": ["Distance? ", "Initial Velocity", "Acceleration? "],
+    "184": ["Distance? ", "Final Velocity? ", "Acceleration? "],
+    "185": ["Distance? ", "Final Velocity? ", "Initial Velocity? "]
+}
 
 # --- MAIN PROGRAM --- #
 if __name__ == "__main__":
     universalConstant = readFile()
-    #print(universalConstant)
+    # print(universalConstant)
     intro()
     while True:
         option = menu()
         if option == 1:
-            choice = selectVariable() # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variable s
+            choice = selectVariable()  # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variable s
             equation = selectEquation(choice)
-            print(equation) # The last number in the list is the thing that identifies what they're solving for
-            solveEquation(equation)
+            values = getValues(equation)
+            solveEquation(values)
         if option == 2:
             pass
         if option == 3:
