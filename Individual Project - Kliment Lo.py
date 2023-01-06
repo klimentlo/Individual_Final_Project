@@ -5,17 +5,17 @@ title: Physics 30 calculator
 author: Kliment Lo
 date: December 13, 2022
 '''
-import math
-
+import math, csv
+from datetime import datetime
 
 # --- INPUTS --- #
 
-def readFile():
+def readFile(FILENAME):
     '''
     reads the file and stores it in a variable
     :return: (list)
     '''
-    file = open("universal_constant.txt")
+    file = open(FILENAME)
     fileList = file.readlines()
     file.close()
     for i in range(len(fileList)):
@@ -177,6 +177,52 @@ def getValues(missingVariables):
     returnVariables.append(numberCombination)
     return (unitList, returnVariables)
 
+def trackHistory(formula, requestValues, values, time):
+    '''
+    Tracks the calculation history of the user
+    :param formula: (str)
+    :param requestValues: (list)
+    :param values: 2D array
+    :param time: ?????
+    :return: (none)
+    '''
+    global historyPast
+
+    for i in range(len(requestValues)):
+        requestValues[i] = str(requestValues[i])
+    requestValues = " ".join(requestValues)
+
+    units = values[0]  # gets the units
+
+    for i in range(len(units)):
+        units[i] = str(units[i])
+    units = " ".join(units)
+
+    values = values[1][:-1]  # gets the values inputted
+
+    for i in range(len(values)):
+        values[i] = str(values[i])
+    values = "".join(values)
+
+    time = str(time)
+    newHistory = ["-----------------------------------------------------", formula, requestValues, values, units, time,"-----------------------------------------------------"]
+    historyList = []
+    historyList.append(newHistory)
+    for i in range(len(historyPast)):
+        historyList.append(historyPast[i])
+    print(historyList)
+    FILE = open("calculation_history.csv", "w")
+    for i in range(len(historyList)):
+
+        historyList[i] = ", ".join(historyList[i]) + "\n"
+        FILE.write(historyList[i])
+    print(historyList)
+
+
+
+    FILE.close()
+
+
 # --- PROCESSING --- #
 def solveEquation(equation):
     '''
@@ -192,9 +238,9 @@ def solveEquation(equation):
 
 def actuallySolveIt(variable):
     '''
-
-    :param variable:
-    :return:
+    looks for the formula that the user wants to use, and plugs in the numbers
+    :param variable: (list)
+    :return: (float)
     '''
     for i in range(len(variable)-1):
         variable[i] = float(variable[i])
@@ -211,8 +257,6 @@ def actuallySolveIt(variable):
             # Centripetal Acceleration
             "161": variable[0] ** 2 / variable[1],
             "162": 4 * (3.1415926535 ** 2) * variable[0] / variable[1],
-            # Distance
-
             # Time
             "181": variable[1] / variable[0],
             "182": variable[1] / variable[0],
@@ -378,16 +422,24 @@ getEquation = {
 
 # --- MAIN PROGRAM --- #
 if __name__ == "__main__":
-    universalConstant = readFile()
+    universalConstant = readFile("universal_constant.txt")
+    historyPast = readFile("calculation_history.csv")
     # print(universalConstant)
     intro()
     while True:
         option = menu()
         if option == 1:
-            choice = selectVariable()  # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variable s
+            choice = selectVariable()  # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variables
+            print(f"Choice: {choice}")
             equation = selectEquation(choice)
+            print(numberCombination)
+            print(f"Equation: {equation}")
             values = getValues(equation)
+            print(f"Values: {values}")
             solveEquation(values)
+            time = datetime.now()
+            print(f"Time: {time}")
+            trackHistory(numberCombination, equation, values, time)
         if option == 2:
             pass
         if option == 3:
