@@ -177,7 +177,7 @@ def getValues(missingVariables):
     returnVariables.append(numberCombination)
     return (unitList, returnVariables)
 
-def trackHistory(formula, requestValues, values, time):
+def trackHistory(formula, requestValues, values, time, answer):
     '''
     Tracks the calculation history of the user
     :param formula: (str)
@@ -187,10 +187,10 @@ def trackHistory(formula, requestValues, values, time):
     :return: (none)
     '''
     global historyPast
-
+    print(formula)
     for i in range(len(requestValues)):
         requestValues[i] = str(requestValues[i])
-    requestValues = " ".join(requestValues)
+    requestValues = "".join(requestValues)
 
     units = values[0]  # gets the units
 
@@ -202,21 +202,23 @@ def trackHistory(formula, requestValues, values, time):
 
     for i in range(len(values)):
         values[i] = str(values[i])
-    values = "".join(values)
+    values = " ".join(values)
 
     time = str(time)
-    newHistory = ["-----------------------------------------------------", formula, requestValues, values, units, time,"-----------------------------------------------------"]
+
+    answer = str(answer)
+
+    newHistory = ["-----------------------------------------------------",time,formula,requestValues,values,units, answer,"-----------------------------------------------------"]
     historyList = []
-    historyList.append(newHistory)
+
     for i in range(len(historyPast)):
         historyList.append(historyPast[i])
-    print(historyList)
+    historyList.append(newHistory)
     FILE = open("calculation_history.csv", "w")
-    for i in range(len(historyList)):
-
-        historyList[i] = ", ".join(historyList[i]) + "\n"
-        FILE.write(historyList[i])
     print(historyList)
+    for i in range(len(historyList)):
+        historyList[i] = ",".join(historyList[i]) + "\n"
+        FILE.write(historyList[i])
 
 
 
@@ -230,11 +232,11 @@ def solveEquation(equation):
     :param equation: (list).
     :return:
     '''
-    print(equation)
     for i in range(len(equation[0])):
         equation[1][i] = equation[0][i] * equation[1][i]
     answer = actuallySolveIt(equation[1])
     print(answer)
+    return answer
 
 def actuallySolveIt(variable):
     '''
@@ -349,7 +351,31 @@ def formulaSheet():
     """)
     menu = input("Press enter to return to menu. ")
 
-
+def displayHistory():
+    '''
+    displays the entire calculation history of the user
+    :return: (none)
+    '''
+    global historyPast
+    print("""
+    
+    
+    
+ 
+                                               Oldest""")
+    # Make them look nicer
+    for i in range(len(historyPast)):
+        print(f"""{historyPast[i][0]}
+  Time: {historyPast[i][1]}
+  Formula Used: {displayFormula[historyPast[i][2]]}
+  Requested Variables: {historyPast[i][3]}
+  Inputted Values: {historyPast[i][4]}
+  Units Used: {historyPast[i][5]}
+  Final Answer: {historyPast[i][6]}
+{historyPast[i][7]}""")
+    print("""                                          Most Recent
+    """)
+    menu = input("Press enter to return to menu. ")
 ### --- DICTIONARY --- ###
 
 unitConversions = {
@@ -369,6 +395,25 @@ unitConversions = {
     "T": 1000000000000,
     "s": 1,
 }
+
+reverseUnitConversions = {
+    0.000000000000000001 : "a",
+    0.000000000000001 :    "f",
+    0.000000000001 :       "p",
+    0.000000001 :          "n",
+    0.000001 :             "μ",
+    0.001 :                "m",
+    0.01 :                 "c",
+    0.1 :                  "d",
+    10 :                   "da",
+    100 :                  "h",
+    1000 :                 "k",
+    1000000 :              "M",
+    1000000000 :           "G",
+    1000000000000 :        "T",
+    1 :                    "s",
+}
+
 
 getEquation = {
     # What the numbers mean: (unit) (Variable they want to solve) (chosen equation) (e.g 112, (kinematics)(velocity)(aₐᵥₑ = △v/△t)
@@ -420,30 +465,59 @@ getEquation = {
     "185": ["Distance? ", "Final Velocity? ", "Initial Velocity? "]
 }
 
+displayFormula = {
+    # Velocity
+    "111": "vₐᵥₑ = △d/△t",
+    "112": "aₐᵥₑ = △v/△t",
+    #Initial Velocy
+    "121": "d = vᵢt + ½at²",
+    "122": "vբ = vᵢ² + 2ad",
+    "123": "d = [(vբ + vᵢ) / 2]t",
+    #Final Velocity
+    "131": "d = vբt - ½at² ",
+    "132": "d = [(vբ + vᵢ) / 2]t",
+    "133": "vբ = vᵢ² + 2ad",
+    #Centripetal Velocity
+    "141": "|v꜀|=  2πr/T",
+    #Acceleration
+    "151": "aₐᵥₑ = △v/△t",
+    #Centripetal Acceleration
+    "161": "|a꜀| = v²/r",
+    "162": "|a꜀|= (4π²r)/T²",
+    #Distance
+    "171": "d = vᵢt + ½at²",
+    "172": "d = vբt - ½at²",
+    "173": "d = [(vբ + vᵢ) / 2]t",
+    "174":  "vբ = vᵢ² + 2ad",
+    #Time
+    "181": "vₐᵥₑ = △d/△t",
+    "182": "aₐᵥₑ = △v/△t",
+    "183": "d = vᵢt + ½at",
+    "184": "d = vբt - ½at²",
+    "185": "d = [(vբ + vᵢ) / 2]t"
+
+
+
+}
 # --- MAIN PROGRAM --- #
 if __name__ == "__main__":
     universalConstant = readFile("universal_constant.txt")
-    historyPast = readFile("calculation_history.csv")
     # print(universalConstant)
     intro()
     while True:
         option = menu()
+        historyPast = readFile("calculation_history.csv") # it reads the history file, and after someone does a calculation, it updates the "historyPast" variable with the newly added history, which is already added to the file
         if option == 1:
             choice = selectVariable()  # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variables
-            print(f"Choice: {choice}")
             equation = selectEquation(choice)
-            print(numberCombination)
-            print(f"Equation: {equation}")
             values = getValues(equation)
-            print(f"Values: {values}")
-            solveEquation(values)
+            answer = solveEquation(values)
             time = datetime.now()
-            print(f"Time: {time}")
-            trackHistory(numberCombination, equation, values, time)
+            trackHistory(numberCombination, equation, values, time, answer)
         if option == 2:
             pass
         if option == 3:
-            pass
+            displayHistory()
         if option == 4:
             formulaSheet()
         if option == 5:
