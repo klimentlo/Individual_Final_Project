@@ -33,10 +33,9 @@ def menu():
     option = input("""
 Please choose an option:
 1. Make a calculation
-2. Change universal constants
-3. View calculation history  
-4. Display Formula Sheet
-5. Exit
+2. View calculation history  
+3. Display Formula Sheet
+4. Exit
 
 > """)
     if option.isnumeric():
@@ -125,8 +124,11 @@ def getValues(missingVariables):
     unitList = []
     variables = []
     # Requesting Values
+    
     for i in range(len(missingVariables)):  # for the length of the list of variables [Distance? ,Time? , Final Velocity? ]
         variables.append(input(f"{missingVariables[i]} "))  # it appends what the user inputted
+        print(i)
+        print(variables)
         variables[i] = variables[i].split(" ")
         reRun = True
         unit = ""
@@ -167,7 +169,9 @@ def getValues(missingVariables):
                             print("Those were invalid units! Try again. ")
                             reRun = False
                             getValues(missingVariables)
-                        pass
+                            pass
+                        else:
+                            pass
         else:
             print("Please include a space between the numbers and units! ")
             getValues(missingVariables)
@@ -357,6 +361,7 @@ def displayHistory():
     :return: (none)
     '''
     global historyPast
+    values = []
     print("""
     
     
@@ -365,12 +370,17 @@ def displayHistory():
                                                Oldest""")
     # Make them look nicer
     for i in range(len(historyPast)):
+        values = []
+        historyPast[i][4] = historyPast[i][4].split()
+        historyPast[i][5] = historyPast[i][5].split()
+        for j in range(len(historyPast[i][4])):
+            values.append(historyPast[i][4][j] + " " + reverseUnitConversions[historyPast[i][5][j]])
+        values = " ".join(values)
         print(f"""{historyPast[i][0]}
   Time: {historyPast[i][1]}
   Formula Used: {displayFormula[historyPast[i][2]]}
   Requested Variables: {historyPast[i][3]}
-  Inputted Values: {historyPast[i][4]}
-  Units Used: {historyPast[i][5]}
+  Inputted Values: {values}
   Final Answer: {historyPast[i][6]}
 {historyPast[i][7]}""")
     print("""                                          Most Recent
@@ -397,21 +407,21 @@ unitConversions = {
 }
 
 reverseUnitConversions = {
-    0.000000000000000001 : "a",
-    0.000000000000001 :    "f",
-    0.000000000001 :       "p",
-    0.000000001 :          "n",
-    0.000001 :             "μ",
-    0.001 :                "m",
-    0.01 :                 "c",
-    0.1 :                  "d",
-    10 :                   "da",
-    100 :                  "h",
-    1000 :                 "k",
-    1000000 :              "M",
-    1000000000 :           "G",
-    1000000000000 :        "T",
-    1 :                    "s",
+    "0.000000000000000001" : "a",
+    "0.000000000000001" :    "f",
+    "0.000000000001" :       "p",
+    "0.000000001" :          "n",
+    "0.000001" :             "μ",
+    "0.001" :                "m",
+    "0.01" :                 "c",
+    "0.1" :                  "d",
+    "10" :                   "da",
+    "100" :                  "h",
+    "1000" :                 "k",
+    "1000000" :              "M",
+    "1000000000" :           "G",
+    "1000000000000" :        "T",
+    "1" : "s",
 }
 
 
@@ -515,10 +525,8 @@ if __name__ == "__main__":
             time = datetime.now()
             trackHistory(numberCombination, equation, values, time, answer)
         if option == 2:
-            pass
-        if option == 3:
             displayHistory()
-        if option == 4:
+        if option == 3:
             formulaSheet()
-        if option == 5:
+        if option == 4:
             exit()
