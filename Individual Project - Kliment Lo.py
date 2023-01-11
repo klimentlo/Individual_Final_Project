@@ -115,71 +115,95 @@ Which equation would you like to use? """)
     return getVariables
 
 def getValues(missingVariables):
-    '''
-    Asks the user the values, and also gets the units
-    :param equation: array of what the formula needs to solve for the thing
-    :return: (list of values) e.g (30, 25, 13)
-    '''
-    global numberCombination
-    unitList = []
-    variables = []
-    # Requesting Values
-    
-    for i in range(len(missingVariables)):  # for the length of the list of variables [Distance? ,Time? , Final Velocity? ]
-        variables.append(input(f"{missingVariables[i]} "))  # it appends what the user inputted
-        print(i)
-        print(variables)
-        variables[i] = variables[i].split(" ")
-        reRun = True
-        unit = ""
-    # Checks if formatting is Correct
-        if len(variables[i]) == 2: # if they did the formatting correctly e.g("90", "cm")
-            try:
-                variables[i][0] = float(variables[i][0]) # try to make it a float
-            except: # but if turns out its a word
-                print("Please enter a number! ")
-                return getValues(missingVariables) # returns to start, making them reinput the value
-        # Running through the units
-            for j in range(len(variables[i][-1])): # for number of letters in the unit section
-                unit += variables[i][-1][j] # unit adds an additioal unit letter to it
-                if reRun == True: # if it wants to rerun this
-                    try:
-                        if unitConversions[unit]:
-                            reRun = False
-                            if unit == "d" or unit == "m":
-                                if unit == "d":
-                                    try:
-                                        unitCheck = unit + variables[i][-1][j + 1]
-                                        unitList.append(unitConversions[unitCheck])
-                                    except (KeyError, IndexError):
-                                        unitList.append(unitConversions[unit])
-                                if unit == "m":
-                                    try:
-                                        slash = variables[i][-1][j + 1]
-                                        if slash == "/":
-                                            unitList.append(1)
-                                        else:
-                                            unitList.append(unitConversions[unit])
-                                    except IndexError:
-                                        unitList.append(1)
-                            else:
-                                unitList.append(unitConversions[unit])
-                    except KeyError:
-                        if j+1 == len(variables[i][-1]):
-                            print("Those were invalid units! Try again. ")
-                            reRun = False
-                            getValues(missingVariables)
-                            pass
-                        else:
-                            pass
-        else:
-            print("Please include a space between the numbers and units! ")
-            getValues(missingVariables)
-    returnVariables = []
-    for i in range(len(variables)):
-        returnVariables.append(variables[i][0])
-    returnVariables.append(numberCombination)
-    return (unitList, returnVariables)
+   '''
+   Asks the user the values, and also gets the units
+   :param equation: array of what the formula needs to solve for the thing
+   :return: (list of values) e.g (30, 25, 13)
+   '''
+   global numberCombination
+   unitList = []
+   variables = []
+
+   # Requesting Values
+   for i in range(len(missingVariables)):  # for the length of the list of variables [Distance? ,Time? , Final Velocity? ]
+       userInput = checkValues(missingVariables[i])
+       unitList.append(userInput[1])
+       variables.append(userInput[0])
+       print(f"Unit List: {unitList}")
+       print(f"Variables: {variables}")
+
+
+   returnVariables = []
+   for i in range(len(variables)):
+       returnVariables.append(variables[i])
+   returnVariables.append(numberCombination)
+   return (unitList, returnVariables)
+
+
+
+def checkValues(missingVariables):
+   variables = input(f"{missingVariables} ")  # it appends what the user inputted
+   variables = variables.split(" ")
+   print(variables)
+   unit = ""
+   reRun = True
+   # Checks if formatting is Correct
+   if len(variables) == 2:  # if they did the formatting correctly e.g("90", "cm")
+       try:
+           variables[0] = float(variables[0])  # try to make it a float
+       except:  # but if turns out its a word
+           print("Please enter a number! ")
+           return checkValues(missingVariables)  # returns to start, making them re input the value
+
+       if missingVariables == "Time? " or missingVariables == "Period? ":
+           try:
+               if unitConversionsTime[variables[-1]]:
+                    returnUnit = unitConversionsTime[variables[-1]]
+               else:
+                   print("Doensn't Match :( ")
+           except KeyError:
+               print("Those were invalid units! Try again! ")
+               return checkValues(missingVariables)
+
+
+       else:
+           for j in range(len(variables[-1])):  # for number of letters in the unit section
+               unit += variables[-1][j]
+               if reRun == True:
+                   try:
+                       if unitConversionsDistance[unit]:
+                           if unit == "m":
+                               print("hi made it to m!")
+                               try:
+                                   unitCheck =  variables[-1][j] + variables[-1][j+1]
+                                   print("made it past adding another letter")
+                                   if unitConversionsDistance[unitCheck]:
+                                       print("boom it's in")
+                                       returnUnit = unitConversionsDistance[unitCheck]
+                                   else:
+                                       print("else")
+                                       returnUnit = unitConversionsDistance[unit]
+                                   reRun = False
+                               except IndexError:
+                                   print("Index Error")
+                                   returnUnit = unitConversionsDistance[unit]
+                                   reRun = False
+                           else:
+                                print("It's a valid unit that's not m!")
+                                returnUnit = unitConversionsDistance[unit]
+                                reRun = False
+                   except KeyError:
+                       if unit == "m":
+                           returnUnit = unitConversionsDistance[unit]
+                           reRun = False
+                       else:
+                           if j == len(variables[-1]) - 1:
+                                print("That is not a valid unit! Please Try again")
+                                return checkValues(missingVariables)
+   else:
+       print("Please include a space between the number and the units! ")
+       return checkValues(missingVariables)
+   return variables[0], returnUnit
 
 def trackHistory(formula, requestValues, values, time, answer):
     '''
@@ -236,6 +260,7 @@ def solveEquation(equation):
     :param equation: (list).
     :return:
     '''
+    print(equation)
     for i in range(len(equation[0])):
         equation[1][i] = equation[0][i] * equation[1][i]
     answer = actuallySolveIt(equation[1])
@@ -388,23 +413,33 @@ def displayHistory():
     menu = input("Press enter to return to menu. ")
 ### --- DICTIONARY --- ###
 
-unitConversions = {
-    "a": 0.000000000000000001,
-    "f": 0.000000000000001,
-    "p": 0.000000000001,
-    "n": 0.000000001,
-    "μ": 0.000001,
-    "m": 0.001,
-    "c": 0.01,
-    "d": 0.1,
-    "da": 10,
-    "h": 100,
-    "k": 1000,
-    "M": 1000000,
-    "G": 1000000000,
-    "T": 1000000000000,
-    "s": 1,
+unitConversionsDistance = {
+    "am": 0.000000000000000001,
+    "fm": 0.000000000000001,
+    "pm": 0.000000000001,
+    "nm": 0.000000001,
+    "μm": 0.000001,
+    "mm": 0.001,
+    "cm": 0.01,
+    "dm": 0.1,
+    "m": 1,
+    "dam": 10,
+    "hm": 100,
+    "km": 1000,
+    "Mm": 1000000,
+    "Gm": 1000000000,
+    "Tm": 1000000000000,
 }
+
+unitConversionsTime = {
+    "Seconds" : 1,
+    "Minutes" : 60,
+    "Hours" : 3600,
+    "Days" : 86400,
+    "Weeks" : 604800,
+}
+
+
 
 reverseUnitConversions = {
     "0.000000000000000001" : "a",
