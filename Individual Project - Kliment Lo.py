@@ -156,16 +156,15 @@ def checkValues(missingVariables):
            return checkValues(missingVariables)  # returns to start, making them re input the value
 
        if missingVariables == "Time? " or missingVariables == "Period? ":
+           variables[-1] = variables[-1].title()
            try:
                if unitConversionsTime[variables[-1]]:
                     returnUnit = unitConversionsTime[variables[-1]]
                else:
                    print("Doensn't Match :( ")
            except KeyError:
-               print("Those were invalid units! Try again! ")
+               print("Those were invalid units! Try again. ")
                return checkValues(missingVariables)
-
-
        else:
            for j in range(len(variables[-1])):  # for number of letters in the unit section
                unit += variables[-1][j]
@@ -198,7 +197,7 @@ def checkValues(missingVariables):
                            reRun = False
                        else:
                            if j == len(variables[-1]) - 1:
-                                print("That is not a valid unit! Please Try again")
+                                print("That is not a valid unit! Try again.")
                                 return checkValues(missingVariables)
    else:
        print("Please include a space between the number and the units! ")
@@ -386,7 +385,6 @@ def displayHistory():
     :return: (none)
     '''
     global historyPast
-    values = []
     print("""
     
     
@@ -399,8 +397,8 @@ def displayHistory():
         historyPast[i][4] = historyPast[i][4].split()
         historyPast[i][5] = historyPast[i][5].split()
         for j in range(len(historyPast[i][4])):
-            values.append(historyPast[i][4][j] + " " + reverseUnitConversions[historyPast[i][5][j]])
-        values = " ".join(values)
+            values.append(historyPast[i][4][j] + "" + reverseUnitConversions[historyPast[i][5][j]])
+        values = "  ".join(values)
         print(f"""{historyPast[i][0]}
   Time: {historyPast[i][1]}
   Formula Used: {displayFormula[historyPast[i][2]]}
@@ -432,7 +430,7 @@ unitConversionsDistance = {
 }
 
 unitConversionsTime = {
-    "Seconds" : 1,
+    "Seconds" : 1.0,
     "Minutes" : 60,
     "Hours" : 3600,
     "Days" : 86400,
@@ -442,21 +440,26 @@ unitConversionsTime = {
 
 
 reverseUnitConversions = {
-    "0.000000000000000001" : "a",
-    "0.000000000000001" :    "f",
-    "0.000000000001" :       "p",
-    "0.000000001" :          "n",
-    "0.000001" :             "μ",
-    "0.001" :                "m",
-    "0.01" :                 "c",
-    "0.1" :                  "d",
-    "10" :                   "da",
-    "100" :                  "h",
-    "1000" :                 "k",
-    "1000000" :              "M",
-    "1000000000" :           "G",
-    "1000000000000" :        "T",
-    "1" : "s",
+    "0.000000000000000001" : "am",
+    "0.000000000000001" :    "fm",
+    "0.000000000001" :       "pm",
+    "0.000000001" :          "nm",
+    "0.000001" :             "μm",
+    "0.001" :                "mm",
+    "0.01" :                 "cm",
+    "0.1" :                  "dm",
+    "10" :                   "dam",
+    "100" :                  "hm",
+    "1000" :                 "km",
+    "1000000" :              "Mm",
+    "1000000000" :           "Gm",
+    "1e-12" :                "Tm",
+    "1" :                    "m",
+    "1.0" :                  " Seconds",
+    "60" :                   " Minutes",
+    "3600" :                 " Hours",
+    "86400" :                " Days",
+    "604800" :               " Weeks"
 }
 
 
@@ -481,7 +484,7 @@ getEquation = {
     ### Gets the actual equation, like the one we will use to help calculate their result
     # Velocity
     "111": ["Distance? ", "Time? "],
-    "112": ["Acceleration?", "Time? "],
+    "112": ["Acceleration? ", "Time? "],
     # Initial Velocity
     "121": ["Distance? ", "Time? ", "Acceleration? "],
     "122": ["Final Velocity? ", "Acceleration? ", "Distance? "],
@@ -504,8 +507,8 @@ getEquation = {
     "174": ["Final Velocity? ", "Initial Velocity? ", "Acceleration? "],
     # Time
     "181": ["Velocity? ", "Distance? "],
-    "182": ["Acceleration? ", "Velocity"],
-    "183": ["Distance? ", "Initial Velocity", "Acceleration? "],
+    "182": ["Acceleration? ", "Velocity? "],
+    "183": ["Distance? ", "Initial Velocity? ", "Acceleration? "],
     "184": ["Distance? ", "Final Velocity? ", "Acceleration? "],
     "185": ["Distance? ", "Final Velocity? ", "Initial Velocity? "]
 }
