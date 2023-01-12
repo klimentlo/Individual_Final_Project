@@ -5,7 +5,7 @@ title: Physics 30 calculator
 author: Kliment Lo
 date: December 13, 2022
 '''
-import math, csv
+import math
 from datetime import datetime
 
 # --- INPUTS --- #
@@ -15,13 +15,30 @@ def readFile(FILENAME):
     reads the file and stores it in a variable
     :return: (list)
     '''
-    file = open(FILENAME)
-    fileList = file.readlines()
-    file.close()
-    for i in range(len(fileList)):
-        if fileList[i][-1] == "\n":
-            fileList[i] = fileList[i][:-1]
-        fileList[i] = fileList[i].split(",")
+    if FILENAME == "decimalPlaceFile.txt":
+        try:
+            file = open(FILENAME, "x")
+            file.write("2")
+            file.close()
+            fileList = 2
+        except FileExistsError:
+            file = open(FILENAME)
+            fileList = file.read()
+            fileList = int(fileList)
+            file.close()
+    else:
+        try:
+            file = open(FILENAME, "x")
+            file.close()
+            fileList = []
+        except FileExistsError:
+            file = open(FILENAME)
+            fileList = file.readlines()
+            file.close()
+            for i in range(len(fileList)):
+                if fileList[i][-1] == "\n":
+                    fileList[i] = fileList[i][:-1]
+                fileList[i] = fileList[i].split(",")
     return fileList
 
 
@@ -31,11 +48,12 @@ def menu():
     :return:
     '''
     option = input("""
-Please choose an option:
+Please select one of the following:
 1. Make a calculation
-2. View calculation history  
-3. Display Formula Sheet
-4. Exit
+2. Select decimal places
+3. View calculation history  
+4. Display Formula Sheet
+5. Exit
 
 > """)
     if option.isnumeric():
@@ -48,11 +66,6 @@ Please choose an option:
     else:
         print("Please enter a valid number! ")
         return menu()
-
-
-def chooseCalculation():
-    print("hi")
-
 
 def selectVariable():
     '''
@@ -89,7 +102,7 @@ def selectEquation(unitValue):
     selects the equation of their choice
     :return:
     '''
-    global numberCombination
+    global numberCombination, answerUnits
     numberCombination = unitValue[0] + unitValue[1]  # adds the unit number and variable number, giving it its own unique number. This displays which value they want to solve for
     equationList = getEquation[numberCombination] # Use the number combination to detect what they want to solve for, which assigns the list of possible equations they can use
     print("""
@@ -112,7 +125,10 @@ Which equation would you like to use? """)
     getVariables = getEquation[numberCombination]# Extracts the variables required to solve the formula they wanna use
     print("""IMPORTANT. Separate the numbers and units with a space! (e.g 30 cm)
     """)
-    return getVariables
+
+    answerUnits = getVariables[-1]
+
+    return getVariables[:-1]
 
 def getValues(missingVariables):
    '''
@@ -129,8 +145,6 @@ def getValues(missingVariables):
        userInput = checkValues(missingVariables[i])
        unitList.append(userInput[1])
        variables.append(userInput[0])
-       print(f"Unit List: {unitList}")
-       print(f"Variables: {variables}")
 
 
    returnVariables = []
@@ -144,7 +158,6 @@ def getValues(missingVariables):
 def checkValues(missingVariables):
    variables = input(f"{missingVariables} ")  # it appends what the user inputted
    variables = variables.split(" ")
-   print(variables)
    unit = ""
    reRun = True
    # Checks if formatting is Correct
@@ -172,23 +185,18 @@ def checkValues(missingVariables):
                    try:
                        if unitConversionsDistance[unit]:
                            if unit == "m":
-                               print("hi made it to m!")
                                try:
                                    unitCheck =  variables[-1][j] + variables[-1][j+1]
-                                   print("made it past adding another letter")
                                    if unitConversionsDistance[unitCheck]:
-                                       print("boom it's in")
                                        returnUnit = unitConversionsDistance[unitCheck]
                                    else:
                                        print("else")
                                        returnUnit = unitConversionsDistance[unit]
                                    reRun = False
                                except IndexError:
-                                   print("Index Error")
                                    returnUnit = unitConversionsDistance[unit]
                                    reRun = False
                            else:
-                                print("It's a valid unit that's not m!")
                                 returnUnit = unitConversionsDistance[unit]
                                 reRun = False
                    except KeyError:
@@ -204,7 +212,7 @@ def checkValues(missingVariables):
        return checkValues(missingVariables)
    return variables[0], returnUnit
 
-def trackHistory(formula, requestValues, values, time, answer):
+def trackHistory(formula, requestValues, values, time, answer, roundedAnswer):
     '''
     Tracks the calculation history of the user
     :param formula: (str)
@@ -213,8 +221,7 @@ def trackHistory(formula, requestValues, values, time, answer):
     :param time: ?????
     :return: (none)
     '''
-    global historyPast
-    print(formula)
+    global historyPast, answerUnits
     for i in range(len(requestValues)):
         requestValues[i] = str(requestValues[i])
     requestValues = "".join(requestValues)
@@ -230,19 +237,16 @@ def trackHistory(formula, requestValues, values, time, answer):
     for i in range(len(values)):
         values[i] = str(values[i])
     values = " ".join(values)
-
     time = str(time)
-
     answer = str(answer)
-
-    newHistory = ["-----------------------------------------------------",time,formula,requestValues,values,units, answer,"-----------------------------------------------------"]
+    roundedAnswer = str(roundedAnswer)
+    newHistory = ["-----------------------------------------------------",time,formula,requestValues,values,units, answer, roundedAnswer, answerUnits, "-----------------------------------------------------"]
     historyList = []
 
     for i in range(len(historyPast)):
         historyList.append(historyPast[i])
     historyList.append(newHistory)
-    FILE = open("calculation_history.csv", "w")
-    print(historyList)
+    FILE = open("calculation_history.txt", "w")
     for i in range(len(historyList)):
         historyList[i] = ",".join(historyList[i]) + "\n"
         FILE.write(historyList[i])
@@ -250,6 +254,33 @@ def trackHistory(formula, requestValues, values, time, answer):
 
 
     FILE.close()
+
+def askDecimal(decimalPlace):
+    '''
+    asks how many decimal places the user wants. The default is set to 2
+    :return:
+    '''
+    newDecimalPlace = input(f"""
+How many decimal places would you like there to be? Current: ({decimalPlace})
+
+> """)
+    if newDecimalPlace.isnumeric():
+        newDecimalPlace = int(newDecimalPlace)
+        return newDecimalPlace
+    else:
+        print("Please enter a whole number! ")
+        return askDecimal(decimalPlace)
+
+def saveDecimal(decimalPlace):
+    '''
+    saves the decimal places in a file. It seems useless, but if a user uses the calculator frequently, they may find it annoying to re-input the amount of decimal points
+    :param decimalPlace: (int)
+    :return: (none)
+    '''
+    file = open("decimalPlaceFile.txt", "w")
+    decimalPlace = str(decimalPlace)
+    file.write(decimalPlace)
+    file.close
 
 
 # --- PROCESSING --- #
@@ -259,11 +290,9 @@ def solveEquation(equation):
     :param equation: (list).
     :return:
     '''
-    print(equation)
     for i in range(len(equation[0])):
         equation[1][i] = equation[0][i] * equation[1][i]
     answer = actuallySolveIt(equation[1])
-    print(answer)
     return answer
 
 def actuallySolveIt(variable):
@@ -274,7 +303,6 @@ def actuallySolveIt(variable):
     '''
     for i in range(len(variable)-1):
         variable[i] = float(variable[i])
-
     if len(variable) == 3:
         getFormula1 = {
             # Velocity
@@ -315,7 +343,6 @@ def actuallySolveIt(variable):
             "185": variable[0] / ((variable[1] + variable[2]) / 2)
         }
         answer = getFormula2[variable[-1]]
-        print(f"Answer: {answer}")
         if variable[-1] == "122":
             if answer < 0:
                 answer = answer * -1
@@ -338,8 +365,12 @@ def intro():
     introduction to the program and what it does
     :return: (none)
     '''
-    print(
-        "Welcome to the Kinematics Calculator! Choose what variable you would like to solve for, and we will do it for you! You can input any type of unit, and it will print it out into the regular one")
+    print("""
+
+Welcome to the Kinematics Calculator! 
+This calculator will help you calculate any variable in Kinematics!
+It can save your calculation history, and also allows you to clear it!
+""")
 
 
 def formulaSheet():
@@ -377,7 +408,9 @@ def formulaSheet():
     --------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                
 
     """)
-    menu = input("Press enter to return to menu. ")
+    menu = input("""Press any key to return to menu
+
+> """)
 
 def displayHistory():
     '''
@@ -385,30 +418,71 @@ def displayHistory():
     :return: (none)
     '''
     global historyPast
-    print("""
-    
-    
-    
- 
+    if len(historyPast) != 0:
+        print("""
+        
+        
+     
                                                Oldest""")
-    # Make them look nicer
-    for i in range(len(historyPast)):
-        values = []
-        historyPast[i][4] = historyPast[i][4].split()
-        historyPast[i][5] = historyPast[i][5].split()
-        for j in range(len(historyPast[i][4])):
-            values.append(historyPast[i][4][j] + "" + reverseUnitConversions[historyPast[i][5][j]])
-        values = "  ".join(values)
-        print(f"""{historyPast[i][0]}
+        # Make them look nicer
+        for i in range(len(historyPast)):
+            values = []
+            historyPast[i][3] = historyPast[i][3].split()
+            historyPast[i][4] = historyPast[i][4].split()
+            historyPast[i][5] = historyPast[i][5].split()
+            ifAcceleration = ""
+            if historyPast[i][-2][-2:] == "^2":
+                historyPast[i][-2] = historyPast[i][-2][:-2]
+                ifAcceleration = "²"
+
+
+            for j in range(len(historyPast[i][4])):
+                values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversions[historyPast[i][5][j]])
+            print(f"""{historyPast[i][0]}
   Time: {historyPast[i][1]}
-  Formula Used: {displayFormula[historyPast[i][2]]}
-  Requested Variables: {historyPast[i][3]}
-  Inputted Values: {values}
-  Final Answer: {historyPast[i][6]}
-{historyPast[i][7]}""")
-    print("""                                          Most Recent
+  Formula Used: {displayFormula[historyPast[i][2]]}""")
+            print(f"""  
+  Inputted Values: """)
+            for h in range(len(values)):
+
+                print(f"""  {values[h]}""")
+            print(f"""
+  Answer: {historyPast[i][6]} {historyPast[i][8]}{ifAcceleration}
+  Rounded Answer: {historyPast[i][7]} {historyPast[i][8]}{ifAcceleration}
+{historyPast[i][9]}""")
+        print("""                                          Most Recent
+    
+*If you would like to clear calculation
+history, type "Clear All".    
+        
     """)
-    menu = input("Press enter to return to menu. ")
+        menu = input("""Press any key to return to menu.
+
+> """)
+        if menu == "Clear All":
+            file = open("calculation_history.txt", "w")
+            file.write("")
+            file.close()
+            print(""" 
+History Cleared Successfully! """)
+        else:
+            pass
+    else:
+        print("""
+        
+Empty calculation history!
+""")
+
+def displayAnswer(answer):
+    '''
+    displays the answer
+    :param answer: (float)
+    :return: (none)
+    '''
+    global answerUnits
+
+    print(f"""Answer: {answer} {answerUnits}""")
+
 ### --- DICTIONARY --- ###
 
 unitConversionsDistance = {
@@ -416,7 +490,7 @@ unitConversionsDistance = {
     "fm": 0.000000000000001,
     "pm": 0.000000000001,
     "nm": 0.000000001,
-    "μm": 0.000001,
+    "um": 0.000001,
     "mm": 0.001,
     "cm": 0.01,
     "dm": 0.1,
@@ -440,11 +514,11 @@ unitConversionsTime = {
 
 
 reverseUnitConversions = {
-    "0.000000000000000001" : "am",
-    "0.000000000000001" :    "fm",
-    "0.000000000001" :       "pm",
-    "0.000000001" :          "nm",
-    "0.000001" :             "μm",
+    "1e-18" : "am",
+    "1e-15" :    "fm",
+    "1e-12" :       "pm",
+    "1e-09" :          "nm",
+    "1e-06" :             "μm",
     "0.001" :                "mm",
     "0.01" :                 "cm",
     "0.1" :                  "dm",
@@ -455,11 +529,11 @@ reverseUnitConversions = {
     "1000000000" :           "Gm",
     "1e-12" :                "Tm",
     "1" :                    "m",
-    "1.0" :                  " Seconds",
-    "60" :                   " Minutes",
-    "3600" :                 " Hours",
-    "86400" :                " Days",
-    "604800" :               " Weeks"
+    "1.0" :                  "Seconds",
+    "60" :                   "Minutes",
+    "3600" :                 "Hours",
+    "86400" :                "Days",
+    "604800" :               "Weeks"
 }
 
 
@@ -483,34 +557,34 @@ getEquation = {
     "18": ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t"],
     ### Gets the actual equation, like the one we will use to help calculate their result
     # Velocity
-    "111": ["Distance? ", "Time? "],
-    "112": ["Acceleration? ", "Time? "],
+    "111": ["Distance? ", "Time? ", "m/s"],
+    "112": ["Acceleration? ", "Time? ", "m/s"],
     # Initial Velocity
-    "121": ["Distance? ", "Time? ", "Acceleration? "],
-    "122": ["Final Velocity? ", "Acceleration? ", "Distance? "],
-    "123": ["Distance? ", "Final Velocity? ", "Time? "],
+    "121": ["Distance? ", "Time? ", "Acceleration? ", "m/s"],
+    "122": ["Final Velocity? ", "Acceleration? ", "Distance? ", "m/s"],
+    "123": ["Distance? ", "Final Velocity? ", "Time? ", "m/s"],
     # Final Velocity
-    "131": ["Distance? ", "Time? ", "Acceleration? "],
-    "132": ["Distance? ", "Initial Velocity? ", "Time? "],
-    "133": ["Initial Velocity? ", "Acceleration? ", "Distance? "],
+    "131": ["Distance? ", "Time? ", "Acceleration? ", "m/s"],
+    "132": ["Distance? ", "Initial Velocity? ", "Time? ", "m/s"],
+    "133": ["Initial Velocity? ", "Acceleration? ", "Distance? ", "m/s"],
     # Centripetal Velocity
-    "141": ["Radius? ", "Period? "],
+    "141": ["Radius? ", "Period? ", "m/s"],
     # Acceleration
-    "151": ["Velocity? ", "Time? "],
+    "151": ["Velocity? ", "Time? ", "m/s^2"],
     # Centripetal Acceleration
-    "161": ["Velocity? ", "Radius? "],
-    "162": ["Radius? ", "Period? "],
+    "161": ["Velocity? ", "Radius? ", "m/s^2"],
+    "162": ["Radius? ", "Period? ", "m/s^2"],
     # Distance
-    "171": ["Initial Velocity? ", "Time? ", "Acceleration? "],
-    "172": ["Final Velocity? ", "Time? ", "Acceleration? "],
-    "173": ["Final Velocity? ", "Initial Velocity? ", "Time? "],
-    "174": ["Final Velocity? ", "Initial Velocity? ", "Acceleration? "],
+    "171": ["Initial Velocity? ", "Time? ", "Acceleration? ", "m"],
+    "172": ["Final Velocity? ", "Time? ", "Acceleration? ", "m"],
+    "173": ["Final Velocity? ", "Initial Velocity? ", "Time? ", "m"],
+    "174": ["Final Velocity? ", "Initial Velocity? ", "Acceleration? ", "m"],
     # Time
-    "181": ["Velocity? ", "Distance? "],
-    "182": ["Acceleration? ", "Velocity? "],
-    "183": ["Distance? ", "Initial Velocity? ", "Acceleration? "],
-    "184": ["Distance? ", "Final Velocity? ", "Acceleration? "],
-    "185": ["Distance? ", "Final Velocity? ", "Initial Velocity? "]
+    "181": ["Velocity? ", "Distance? ", "Seconds"],
+    "182": ["Acceleration? ", "Velocity? ", "Seconds"],
+    "183": ["Distance? ", "Initial Velocity? ", "Acceleration? ", "Seconds"],
+    "184": ["Distance? ", "Final Velocity? ", "Acceleration? ", "Seconds"],
+    "185": ["Distance? ", "Final Velocity? ", "Initial Velocity? ", "Seconds"]
 }
 
 displayFormula = {
@@ -549,22 +623,26 @@ displayFormula = {
 }
 # --- MAIN PROGRAM --- #
 if __name__ == "__main__":
-    universalConstant = readFile("universal_constant.txt")
-    # print(universalConstant)
     intro()
     while True:
+        historyPast = readFile("calculation_history.txt")  # it reads the history file, and after someone does a calculation, it updates the "historyPast" variable with the newly added history, which is already added to the file
+        decimalPlace = readFile("decimalPlaceFile.txt")
         option = menu()
-        historyPast = readFile("calculation_history.csv") # it reads the history file, and after someone does a calculation, it updates the "historyPast" variable with the newly added history, which is already added to the file
         if option == 1:
             choice = selectVariable()  # returns a tuple, where the first thing identifies the unit it's from, and the second thing identifies the variables
             equation = selectEquation(choice)
             values = getValues(equation)
             answer = solveEquation(values)
+            roundedAnswer = round(answer, decimalPlace)
+            displayAnswer(roundedAnswer)
             time = datetime.now()
-            trackHistory(numberCombination, equation, values, time, answer)
+            trackHistory(numberCombination, equation, values, time, answer, roundedAnswer)
         if option == 2:
-            displayHistory()
+            decimalPlace = askDecimal(decimalPlace)
+            saveDecimal(decimalPlace)
         if option == 3:
-            formulaSheet()
+            displayHistory()
         if option == 4:
+            formulaSheet()
+        if option == 5:
             exit()
