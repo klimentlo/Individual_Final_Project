@@ -49,12 +49,12 @@ def menu():
     '''
     option = input("""
 Please select one of the following:
-1. Make a calculation
-2. Select decimal places
-3. View calculation history  
+1. Make a Calculation
+2. Select Decimal Places
+3. View Calculation History  
 4. Display Formula Sheet
-5. Exit
-
+5. Display Unit Conversion Sheet
+6. Exit
 > """)
     if option.isnumeric():
         option = int(option)
@@ -167,50 +167,54 @@ def checkValues(missingVariables):
        except:  # but if turns out its a word
            print("Please enter a number! ")
            return checkValues(missingVariables)  # returns to start, making them re input the value
-
        if missingVariables == "Time? " or missingVariables == "Period? ":
            variables[-1] = variables[-1].title()
            try:
                if unitConversionsTime[variables[-1]]:
                     returnUnit = unitConversionsTime[variables[-1]]
                else:
-                   print("Doensn't Match :( ")
+                   print("Doesn't Match :( ")
            except KeyError:
                print("Those were invalid units! Try again. ")
                return checkValues(missingVariables)
-       else:
-           for j in range(len(variables[-1])):  # for number of letters in the unit section
-               unit += variables[-1][j]
-               if reRun == True:
-                   try:
-                       if unitConversionsDistance[unit]:
-                           if unit == "m":
-                               try:
-                                   unitCheck =  variables[-1][j] + variables[-1][j+1]
-                                   if unitConversionsDistance[unitCheck]:
-                                       returnUnit = unitConversionsDistance[unitCheck]
-                                   else:
-                                       print("else")
-                                       returnUnit = unitConversionsDistance[unit]
-                                   reRun = False
-                               except IndexError:
-                                   returnUnit = unitConversionsDistance[unit]
-                                   reRun = False
-                           else:
-                                returnUnit = unitConversionsDistance[unit]
-                                reRun = False
-                   except KeyError:
-                       if unit == "m":
-                           returnUnit = unitConversionsDistance[unit]
-                           reRun = False
-                       else:
-                           if j == len(variables[-1]) - 1:
-                                print("That is not a valid unit! Try again.")
-                                return checkValues(missingVariables)
+
+       elif missingVariables == "Distance? ":
+           try:
+               if unitConversionsDistance[variables[-1]]:
+                    print("hi")
+                    returnUnit = unitConversionsDistance[variables[-1]]
+               else:
+                   print("Doesn't Match :( ")
+           except KeyError:
+               print("Those were invalid units! Try again. ")
+               return checkValues(missingVariables)
+
+       elif missingVariables == "Velocity? " or missingVariables == "Initial Velocity? " or missingVariables == "Final Velocity? " or missingVariables == "Acceleration":
+           variables[-1] = variables[-1].split("/")
+           if len(variables[-1]) == 2:
+               try:
+                    unitList = unitConversionsDistance(variables[-1][0])
+               except KeyError:
+                   print("That is an invalid distance! Try again. ")
+                   return checkValues(missingVariables)
+               try:
+                    unitList = unitConversionsTime(variables[-1][1])
+               except KeyError:
+                   print("That is an invalid time! Try again. ")
+                   return checkValues(missingVariables)
+           else:
+               print("Please only use one slash!")
+               return checkValues(missingVariables)
+
+
+           if missingVariables == "Acceleration? ":
+               pass
+
    else:
        print("Please include a space between the number and the units! ")
        return checkValues(missingVariables)
    return variables[0], returnUnit
+
 
 def trackHistory(formula, requestValues, values, time, answer, roundedAnswer):
     '''
@@ -314,7 +318,7 @@ def actuallySolveIt(variable):
             "151": variable[0] / variable[1],
             # Centripetal Acceleration
             "161": variable[0] ** 2 / variable[1],
-            "162": 4 * (3.1415926535 ** 2) * variable[0] / variable[1],
+            "162": (4 * (3.141592653589793238462643383279502884197169399375105820974944592 ** 2) * variable[0]) / variable[1] ** 2,
             # Time
             "181": variable[1] / variable[0],
             "182": variable[1] / variable[0],
@@ -373,13 +377,14 @@ It can save your calculation history, and also allows you to clear it!
 """)
 
 
-def formulaSheet():
+def formulaSheet(formula):
     '''
     prints out the formula sheet BEAUTIFULLY
     :return: (none)
     '''
     global universalConstant
-    print("""
+    if formula == "formulaSheet":
+        print("""
     ---------------------------------------------------------------------------------------------------------------------------------------------------
     | EQUATIONS                                                                                                                                       |
     |                                                                                                                                                 |
@@ -408,6 +413,30 @@ def formulaSheet():
     --------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                
 
     """)
+    else:
+          print("""
+    -------------------------------------------------------------------------------------------------------------------------------------------------- 
+    |                                                          Prefix Symbol Value
+    |                   Distance                                      Velocity
+    |    
+    |    atto ............. a ..............10⁻¹⁸
+    |    femto ............ f ..............10⁻¹⁵
+    |    pico.............. p ..............10⁻¹²
+    |    nano.............. n ..............10⁻⁹
+    |    micro ............ u ..............10⁻⁶
+    |    milli............. m ..............10⁻³
+    |    centi............. c...............10⁻²
+    |    deci.............. d ..............10⁻¹
+    |    deka ............. da..............10¹
+    |    hecto ............ h ..............10²
+    |    kilo ............. k ..............10³
+    |    mega ............. M ..............10⁶
+    |    giga.............  G...............10⁹
+    |    tera.............. T ..............10¹²
+    |
+    -----------------------------------------------------------------------------------------------
+""")
+
     menu = input("""Press any key to return to menu
 
 > """)
@@ -504,9 +533,9 @@ unitConversionsDistance = {
 }
 
 unitConversionsTime = {
-    "Seconds" : 1.0,
-    "Minutes" : 60,
-    "Hours" : 3600,
+    "S" : 1.0,
+    "Mins" : 60,
+    "Hrs" : 3600,
     "Days" : 86400,
     "Weeks" : 604800,
 }
@@ -529,11 +558,11 @@ reverseUnitConversions = {
     "1000000000" :           "Gm",
     "1e-12" :                "Tm",
     "1" :                    "m",
-    "1.0" :                  "Seconds",
-    "60" :                   "Minutes",
-    "3600" :                 "Hours",
-    "86400" :                "Days",
-    "604800" :               "Weeks"
+    "1.0" :                  "s",
+    "60" :                   "mins",
+    "3600" :                 "hrs",
+    "86400" :                "days",
+    "604800" :               "wks"
 }
 
 
@@ -643,6 +672,8 @@ if __name__ == "__main__":
         if option == 3:
             displayHistory()
         if option == 4:
-            formulaSheet()
+            formulaSheet("formulaSheet")
         if option == 5:
-            exit()
+            formulaSheet("unitConversionSheet")
+        if option == 6:
+           exit()
