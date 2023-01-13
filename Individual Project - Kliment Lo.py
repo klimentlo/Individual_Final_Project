@@ -192,13 +192,17 @@ def checkValues(missingVariables):
        elif missingVariables == "Velocity? " or missingVariables == "Initial Velocity? " or missingVariables == "Final Velocity? " or missingVariables == "Acceleration":
            variables[-1] = variables[-1].split("/")
            if len(variables[-1]) == 2:
+               print(variables[-1][0])
+               returnUnit = []
                try:
-                    unitList = unitConversionsDistance(variables[-1][0])
+                    returnUnit.append(unitConversionsDistance[variables[-1][0]])
                except KeyError:
                    print("That is an invalid distance! Try again. ")
                    return checkValues(missingVariables)
                try:
-                    unitList = unitConversionsTime(variables[-1][1])
+                    variables[-1][1] = variables[-1][1].title()
+                    print(variables[-1][1])
+                    returnUnit.append(unitConversionsTime[variables[-1][1]])
                except KeyError:
                    print("That is an invalid time! Try again. ")
                    return checkValues(missingVariables)
@@ -209,6 +213,7 @@ def checkValues(missingVariables):
 
            if missingVariables == "Acceleration? ":
                pass
+
 
    else:
        print("Please include a space between the number and the units! ")
@@ -294,10 +299,21 @@ def solveEquation(equation):
     :param equation: (list).
     :return:
     '''
+    print(equation)
+    product = 1
     for i in range(len(equation[0])):
+        try:
+            for j in range(len(equation[0][i])):
+                product *= equation[0][i][j]
+            equation[0][i] = product
+        except TypeError:
+            pass
         equation[1][i] = equation[0][i] * equation[1][i]
-    answer = actuallySolveIt(equation[1])
-    return answer
+    returnAnswer = actuallySolveIt(equation[1])
+
+    for i in range(len(equation[1]) - 1):
+        equation[1][i] = equation[1][i] / equation[0][i]
+    return returnAnswer
 
 def actuallySolveIt(variable):
     '''
@@ -508,9 +524,13 @@ def displayAnswer(answer):
     :param answer: (float)
     :return: (none)
     '''
+    ifAcceleration = ""
     global answerUnits
-
-    print(f"""Answer: {answer} {answerUnits}""")
+    printAnswerUnits = answerUnits
+    if answerUnits[-2:] == "^2":
+        printAnswerUnits = answerUnits[:-2]
+        ifAcceleration = "²"
+    print(f"""Answer: {answer} {printAnswerUnits}{ifAcceleration}""")
 
 ### --- DICTIONARY --- ###
 
@@ -535,7 +555,7 @@ unitConversionsDistance = {
 unitConversionsTime = {
     "S" : 1.0,
     "Mins" : 60,
-    "Hrs" : 3600,
+    "H" : 3600,
     "Days" : 86400,
     "Weeks" : 604800,
 }
@@ -560,9 +580,9 @@ reverseUnitConversions = {
     "1" :                    "m",
     "1.0" :                  "s",
     "60" :                   "mins",
-    "3600" :                 "hrs",
+    "3600" :                 "h",
     "86400" :                "days",
-    "604800" :               "wks"
+    "604800" :               "weeks"
 }
 
 
@@ -662,6 +682,7 @@ if __name__ == "__main__":
             equation = selectEquation(choice)
             values = getValues(equation)
             answer = solveEquation(values)
+            print(values)
             roundedAnswer = round(answer, decimalPlace)
             displayAnswer(roundedAnswer)
             time = datetime.now()
