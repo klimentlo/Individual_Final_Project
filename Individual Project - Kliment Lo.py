@@ -240,9 +240,9 @@ def trackHistory(formula, requestValues, values, time, answer, roundedAnswer):
     for i in range(len(units)):
         units[i] = str(units[i])
     units = " ".join(units)
+    print(f"Units: {units}")
 
     values = values[1][:-1]  # gets the values inputted
-
     for i in range(len(values)):
         values[i] = str(values[i])
     values = " ".join(values)
@@ -296,24 +296,34 @@ def saveDecimal(decimalPlace):
 def solveEquation(equation):
     '''
     Solves the equations
-    :param equation: (list).
+    :param equation: (tuple).
     :return:
     '''
-    print(equation)
+    equation = list(equation)
+    unitConversionValues = []
     product = 1
+
     for i in range(len(equation[0])):
+        appendAgain = True
         try:
             for j in range(len(equation[0][i])):
                 product *= equation[0][i][j]
+                if appendAgain == True:
+                    unitConversionValues.append(equation[0][i])
+                    appendAgain = False
             equation[0][i] = product
         except TypeError:
+            unitConversionValues.append(equation[0][i])
             pass
         equation[1][i] = equation[0][i] * equation[1][i]
     returnAnswer = actuallySolveIt(equation[1])
 
     for i in range(len(equation[1]) - 1):
         equation[1][i] = equation[1][i] / equation[0][i]
-    return returnAnswer
+
+    equation[0] = unitConversionValues
+
+    return [returnAnswer,equation]
 
 def actuallySolveIt(variable):
     '''
@@ -472,9 +482,11 @@ def displayHistory():
         # Make them look nicer
         for i in range(len(historyPast)):
             values = []
+            print(f"Before: {historyPast[i][5]}")
             historyPast[i][3] = historyPast[i][3].split()
             historyPast[i][4] = historyPast[i][4].split()
             historyPast[i][5] = historyPast[i][5].split()
+            print(f"After: {historyPast[i][5]}")
             ifAcceleration = ""
             if historyPast[i][-2][-2:] == "^2":
                 historyPast[i][-2] = historyPast[i][-2][:-2]
@@ -682,7 +694,8 @@ if __name__ == "__main__":
             equation = selectEquation(choice)
             values = getValues(equation)
             answer = solveEquation(values)
-            print(values)
+            values = answer[1]
+            answer = answer[0]
             roundedAnswer = round(answer, decimalPlace)
             displayAnswer(roundedAnswer)
             time = datetime.now()
