@@ -158,8 +158,7 @@ def getValues(missingVariables):
 def checkValues(missingVariables):
    variables = input(f"{missingVariables} ")  # it appends what the user inputted
    variables = variables.split(" ")
-   unit = ""
-   reRun = True
+   global acceleration
    # Checks if formatting is Correct
    if len(variables) == 2:  # if they did the formatting correctly e.g("90", "cm")
        try:
@@ -171,9 +170,8 @@ def checkValues(missingVariables):
            variables[-1] = variables[-1].title()
            try:
                if unitConversionsTime[variables[-1]]:
+                    acceleration += "n"
                     returnUnit = unitConversionsTime[variables[-1]]
-               else:
-                   print("Doesn't Match :( ")
            except KeyError:
                print("Those were invalid units! Try again. ")
                return checkValues(missingVariables)
@@ -181,10 +179,8 @@ def checkValues(missingVariables):
        elif missingVariables == "Distance? ":
            try:
                if unitConversionsDistance[variables[-1]]:
-                    print("hi")
+                    acceleration += "n"
                     returnUnit = unitConversionsDistance[variables[-1]]
-               else:
-                   print("Doesn't Match :( ")
            except KeyError:
                print("Those were invalid units! Try again. ")
                return checkValues(missingVariables)
@@ -202,6 +198,7 @@ def checkValues(missingVariables):
                try:
                     variables[-1][1] = variables[-1][1].title()
                     print(variables[-1][1])
+                    acceleration += "y"
                     returnUnit.append(unitConversionsTime[variables[-1][1]])
                except KeyError:
                    print("That is an invalid time! Try again. ")
@@ -209,11 +206,6 @@ def checkValues(missingVariables):
            else:
                print("Please only use one slash!")
                return checkValues(missingVariables)
-
-
-           if missingVariables == "Acceleration? ":
-               pass
-
 
    else:
        print("Please include a space between the number and the units! ")
@@ -230,7 +222,7 @@ def trackHistory(formula, requestValues, values, time, answer, roundedAnswer):
     :param time: ?????
     :return: (none)
     '''
-    global historyPast, answerUnits
+    global historyPast, answerUnits, acceleration
     for i in range(len(requestValues)):
         requestValues[i] = str(requestValues[i])
     requestValues = "".join(requestValues)
@@ -249,7 +241,7 @@ def trackHistory(formula, requestValues, values, time, answer, roundedAnswer):
     time = str(time)
     answer = str(answer)
     roundedAnswer = str(roundedAnswer)
-    newHistory = ["-----------------------------------------------------",time,formula,requestValues,values,units, answer, roundedAnswer, answerUnits, "-----------------------------------------------------"]
+    newHistory = ["-----------------------------------------------------",time,formula,requestValues,values,units, answer, roundedAnswer, answerUnits, acceleration, "-----------------------------------------------------"]
     historyList = []
 
     for i in range(len(historyPast)):
@@ -299,7 +291,6 @@ def solveEquation(equation):
     :param equation: (tuple).
     :return:
     '''
-    equation = list(equation)
     unitConversionValues = []
     product = 1
 
@@ -321,9 +312,7 @@ def solveEquation(equation):
     for i in range(len(equation[1]) - 1):
         equation[1][i] = equation[1][i] / equation[0][i]
 
-    equation[0] = unitConversionValues
-
-    return [returnAnswer,equation]
+    return returnAnswer
 
 def actuallySolveIt(variable):
     '''
@@ -487,26 +476,29 @@ def displayHistory():
             historyPast[i][4] = historyPast[i][4].split()
             historyPast[i][5] = historyPast[i][5].split()
             print(f"After: {historyPast[i][5]}")
+            for j in range(len(historyPast[i][4])):
+                print(historyPast[i][9][j])
+                if historyPast[i][9][j] == "n":
+                    print("IT was NO")
+                    values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversions[historyPast[i][5][j]])
+                else:
+                    values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversionsAcceleration[historyPast[i][5][j]])
             ifAcceleration = ""
             if historyPast[i][-2][-2:] == "^2":
                 historyPast[i][-2] = historyPast[i][-2][:-2]
                 ifAcceleration = "²"
-
-
-            for j in range(len(historyPast[i][4])):
-                values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversions[historyPast[i][5][j]])
             print(f"""{historyPast[i][0]}
+                
   Time: {historyPast[i][1]}
   Formula Used: {displayFormula[historyPast[i][2]]}""")
-            print(f"""  
-  Inputted Values: """)
+            print(f"""  Inputted Values: """)
             for h in range(len(values)):
 
                 print(f"""  {values[h]}""")
             print(f"""
   Answer: {historyPast[i][6]} {historyPast[i][8]}{ifAcceleration}
   Rounded Answer: {historyPast[i][7]} {historyPast[i][8]}{ifAcceleration}
-{historyPast[i][9]}""")
+{historyPast[i][10]}""")
         print("""                                          Most Recent
     
 *If you would like to clear calculation
@@ -575,28 +567,61 @@ unitConversionsTime = {
 
 
 reverseUnitConversions = {
-    "1e-18" : "am",
-    "1e-15" :    "fm",
-    "1e-12" :       "pm",
-    "1e-09" :          "nm",
-    "1e-06" :             "μm",
-    "0.001" :                "mm",
-    "0.01" :                 "cm",
-    "0.1" :                  "dm",
-    "10" :                   "dam",
-    "100" :                  "hm",
-    "1000" :                 "km",
-    "1000000" :              "Mm",
-    "1000000000" :           "Gm",
-    "1e-12" :                "Tm",
-    "1" :                    "m",
-    "1.0" :                  "s",
-    "60" :                   "mins",
-    "3600" :                 "h",
-    "86400" :                "days",
-    "604800" :               "weeks"
+    # Distance
+    "1e-18" :      "am",
+    "1e-15" :      "fm",
+    "1e-12" :      "pm",
+    "1e-09" :      "nm",
+    "1e-06" :      "μm",
+    "0.001" :      "mm",
+    "0.01" :       "cm",
+    "0.1" :        "dm",
+    "1":           "m",
+    "10" :         "dam",
+    "100" :        "hm",
+    "1000" :       "km",
+    "1000000" :    "Mm",
+    "1000000000" : "Gm",
+    "1e-12" :      "Tm",
+    # Time
+    "1.0" :        "s",
+    "60" :         "mins",
+    "3600" :       "hrs",
+    "86400" :      "days",
+    "604800" :     "wks",
 }
 
+reverseUnitConversionsAcceleration = {
+    # Seconds
+    "1e-18" :      "am/s",
+    "1e-15" :      "fm/s",
+    "1e-12" :      "pm/s",
+    "1e-09" :      "nm/s",
+    "1e-06" :      "μm/s",
+    "0.001" :      "mm/s",
+    "0.01" :       "cm/s",
+    "0.1" :        "dm/s",
+    "1":           "m/s",
+    "10" :         "dam/s",
+    "100" :        "hm/s",
+    "1000" :       "km/s",
+    "1000000" :    "Mm/s",
+    "1000000000" : "Gm/s",
+    "1000000000000.0" :      "Tm/s",
+    "1.0" : "m/s",
+    "1.00" : "s",
+    # Mins
+    "6e-17" : "am/mins",
+    "6e-14" : "fm/mins",
+    "6e-11" : "pm/mins",
+    "6e-8" : "nm/mins",
+    "6e-5" : "nm/mins",
+    "0.01" : "μm/mins",
+    # Hours
+    "3600000" : "km/hrs"
+
+
+}
 
 getEquation = {
     # What the numbers mean: (unit) (Variable they want to solve) (chosen equation) (e.g 112, (kinematics)(velocity)(aₐᵥₑ = △v/△t)
@@ -686,6 +711,7 @@ displayFormula = {
 if __name__ == "__main__":
     intro()
     while True:
+        acceleration = ""
         historyPast = readFile("calculation_history.txt")  # it reads the history file, and after someone does a calculation, it updates the "historyPast" variable with the newly added history, which is already added to the file
         decimalPlace = readFile("decimalPlaceFile.txt")
         option = menu()
@@ -694,12 +720,11 @@ if __name__ == "__main__":
             equation = selectEquation(choice)
             values = getValues(equation)
             answer = solveEquation(values)
-            values = answer[1]
-            answer = answer[0]
             roundedAnswer = round(answer, decimalPlace)
             displayAnswer(roundedAnswer)
             time = datetime.now()
             trackHistory(numberCombination, equation, values, time, answer, roundedAnswer)
+            print(acceleration)
         if option == 2:
             decimalPlace = askDecimal(decimalPlace)
             saveDecimal(decimalPlace)
