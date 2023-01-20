@@ -55,6 +55,7 @@ Please select one of the following:
 4. Display Formula Sheet
 5. Display Unit Conversion Sheet
 6. Exit
+
 > """)
     if option.isnumeric():
         option = int(option)
@@ -185,10 +186,9 @@ def checkValues(missingVariables):
                print("Those were invalid units! Try again. ")
                return checkValues(missingVariables)
 
-       elif missingVariables == "Velocity? " or missingVariables == "Initial Velocity? " or missingVariables == "Final Velocity? " or missingVariables == "Acceleration":
+       elif missingVariables == "Velocity? " or missingVariables == "Initial Velocity? " or missingVariables == "Final Velocity? " or missingVariables == "Acceleration? ":
            variables[-1] = variables[-1].split("/")
            if len(variables[-1]) == 2:
-               print(variables[-1][0])
                returnUnit = []
                try:
                     returnUnit.append(unitConversionsDistance[variables[-1][0]])
@@ -197,9 +197,10 @@ def checkValues(missingVariables):
                    return checkValues(missingVariables)
                try:
                     variables[-1][1] = variables[-1][1].title()
-                    print(variables[-1][1])
                     acceleration += "y"
                     returnUnit.append(unitConversionsTime[variables[-1][1]])
+                    print(returnUnit)
+                    returnUnit = returnUnit[0]/returnUnit[1]
                except KeyError:
                    print("That is an invalid time! Try again. ")
                    return checkValues(missingVariables)
@@ -232,7 +233,6 @@ def trackHistory(formula, requestValues, values, time, answer, roundedAnswer):
     for i in range(len(units)):
         units[i] = str(units[i])
     units = " ".join(units)
-    print(f"Units: {units}")
 
     values = values[1][:-1]  # gets the values inputted
     for i in range(len(values)):
@@ -292,20 +292,9 @@ def solveEquation(equation):
     :return:
     '''
     unitConversionValues = []
-    product = 1
 
     for i in range(len(equation[0])):
-        appendAgain = True
-        try:
-            for j in range(len(equation[0][i])):
-                product *= equation[0][i][j]
-                if appendAgain == True:
-                    unitConversionValues.append(equation[0][i])
-                    appendAgain = False
-            equation[0][i] = product
-        except TypeError:
-            unitConversionValues.append(equation[0][i])
-            pass
+        unitConversionValues.append(equation[0][i])
         equation[1][i] = equation[0][i] * equation[1][i]
     returnAnswer = actuallySolveIt(equation[1])
 
@@ -471,21 +460,18 @@ def displayHistory():
         # Make them look nicer
         for i in range(len(historyPast)):
             values = []
-            print(f"Before: {historyPast[i][5]}")
             historyPast[i][3] = historyPast[i][3].split()
             historyPast[i][4] = historyPast[i][4].split()
             historyPast[i][5] = historyPast[i][5].split()
-            print(f"After: {historyPast[i][5]}")
             for j in range(len(historyPast[i][4])):
-                print(historyPast[i][9][j])
                 if historyPast[i][9][j] == "n":
-                    print("IT was NO")
                     values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversions[historyPast[i][5][j]])
                 else:
                     values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversionsAcceleration[historyPast[i][5][j]])
             ifAcceleration = ""
-            if historyPast[i][-2][-2:] == "^2":
-                historyPast[i][-2] = historyPast[i][-2][:-2]
+            if historyPast[i][-3][-2:] == "^2":
+                print("BOOM WENT THROUH")
+                historyPast[i][-3] = historyPast[i][-3][:-2]
                 ifAcceleration = "²"
             print(f"""{historyPast[i][0]}
                 
@@ -498,6 +484,7 @@ def displayHistory():
             print(f"""
   Answer: {historyPast[i][6]} {historyPast[i][8]}{ifAcceleration}
   Rounded Answer: {historyPast[i][7]} {historyPast[i][8]}{ifAcceleration}
+  
 {historyPast[i][10]}""")
         print("""                                          Most Recent
     
@@ -558,10 +545,8 @@ unitConversionsDistance = {
 
 unitConversionsTime = {
     "S" : 1.0,
-    "Mins" : 60,
+    "Min" : 60,
     "H" : 3600,
-    "Days" : 86400,
-    "Weeks" : 604800,
 }
 
 
@@ -585,42 +570,59 @@ reverseUnitConversions = {
     "1e-12" :      "Tm",
     # Time
     "1.0" :        "s",
-    "60" :         "mins",
-    "3600" :       "hrs",
-    "86400" :      "days",
-    "604800" :     "wks",
+    "60" :         "min",
+    "3600" :       "h",
 }
 
 reverseUnitConversionsAcceleration = {
     # Seconds
-    "1e-18" :      "am/s",
-    "1e-15" :      "fm/s",
-    "1e-12" :      "pm/s",
-    "1e-09" :      "nm/s",
-    "1e-06" :      "μm/s",
-    "0.001" :      "mm/s",
-    "0.01" :       "cm/s",
-    "0.1" :        "dm/s",
-    "1":           "m/s",
-    "10" :         "dam/s",
-    "100" :        "hm/s",
-    "1000" :       "km/s",
-    "1000000" :    "Mm/s",
-    "1000000000" : "Gm/s",
+    "1e-18" :                "am/s",
+    "1e-15" :                "fm/s",
+    "1e-12" :                "pm/s",
+    "1e-09" :                "nm/s",
+    "1e-06" :                "μm/s",
+    "0.001" :                "mm/s",
+    "0.01" :                 "cm/s",
+    "0.1" :                  "dm/s",
+    "1":                     "m/s",
+    "10" :                   "dam/s",
+    "100" :                  "hm/s",
+    "1000" :                 "km/s",
+    "1000000" :              "Mm/s",
+    "1000000000" :           "Gm/s",
     "1000000000000.0" :      "Tm/s",
-    "1.0" : "m/s",
-    "1.00" : "s",
-    # Mins
-    "6e-17" : "am/mins",
-    "6e-14" : "fm/mins",
-    "6e-11" : "pm/mins",
-    "6e-8" : "nm/mins",
-    "6e-5" : "nm/mins",
-    "0.01" : "μm/mins",
+    # Min
+    "1.6666666666666668e-20" : "am/min",
+    "1.6666666666666667e-17" : "fm/min",
+    "1.6666666666666667e-14" : "pm/min",
+    "1.6666666666666667e-11" : "nm/min",
+    "1.6666666666666667e-08" : "μm/min",
+    "1.6666666666666667e-05" : "mm/min",
+    "0.00016666666666666666" : "cm/min",
+    "0.0016666666666666668" :  "dm/min",
+    "0.016666666666666666":    "m/min",
+    "0.16666666666666666" :    "dam/min",
+    "1.6666666666666667" :     "hm/min",
+    "16.666666666666668" :     "km/min",
+    "16666.666666666668" :     "Mm/min",
+    "16666666.666666666" :     "Gm/min",
+    "16666666666.666666" :     "Tm/min",
     # Hours
-    "3600000" : "km/hrs"
-
-
+     "2.777777777777778e-22" : "am/h",
+     "2.777777777777778e-19" : "fm/h",
+     "2.777777777777778e-16" : "pm/h",
+     "2.777777777777778e-13" : "nm/h",
+     "2.777777777777778e-10" : "μm/h",
+     "2.7777777777777776e-07" : "mm/h",
+     "2.777777777777778e-06" : "cm/h",
+     "2.777777777777778e-05" :  "dm/h",
+     "0.0002777777777777778":    "m/h",
+     "0.002777777777777778" :    "dam/h",
+     "0.027777777777777776" :     "hm/h",
+     "0.2777777777777778" :     "km/h",
+     "277.77777777777777" :     "Mm/h",
+     "277777.77777777775" :     "Gm/h",
+     "277777777.7777778" :     "Tm/h",
 }
 
 getEquation = {
@@ -724,7 +726,6 @@ if __name__ == "__main__":
             displayAnswer(roundedAnswer)
             time = datetime.now()
             trackHistory(numberCombination, equation, values, time, answer, roundedAnswer)
-            print(acceleration)
         if option == 2:
             decimalPlace = askDecimal(decimalPlace)
             saveDecimal(decimalPlace)
