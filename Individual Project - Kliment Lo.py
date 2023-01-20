@@ -470,7 +470,6 @@ def displayHistory():
                     values.append(historyPast[i][3][j] + " " + historyPast[i][4][j] + " " + reverseUnitConversionsAcceleration[historyPast[i][5][j]])
             ifAcceleration = ""
             if historyPast[i][-3][-2:] == "^2":
-                print("BOOM WENT THROUH")
                 historyPast[i][-3] = historyPast[i][-3][:-2]
                 ifAcceleration = "²"
             print(f"""{historyPast[i][0]}
