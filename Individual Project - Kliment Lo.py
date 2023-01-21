@@ -384,8 +384,8 @@ def actuallySolveIt(variable):
             "173": ((variable[0] + variable[1]) / 2) / variable[2],
             "174": (variable[0] - variable[1] ** 2) / (2 * variable[2]),
             #Time
-            "183": variable[1] ** 2 - (2 * variable[2] * variable[0]),
-            "184": variable[1] ** 2 - (2 * variable[2] * variable[0]),
+            "183": variable[1] ** 2 + (2 * variable[2] * variable[0]),
+            "184": variable[1] ** 2 + (2 * variable[2] * variable[0]),
             "185": variable[0] / ((variable[1] + variable[2]) / 2)
         }
 
@@ -709,7 +709,7 @@ getEquation = {
     # Distance
     "17": ["d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t", "vբ = vᵢ² + 2ad"],
     # Time
-    "18": ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t"],
+    "18": ["vₐᵥₑ = △d/△t", "aₐᵥₑ = △v/△t", "d = vᵢt + ½at²", "d = vբt - ½at²", "d = [(vբ + vᵢ) / 2]t"],
     ### Gets the actual equation, like the one we will use to help calculate their result
     # Velocity
     "111": ["Distance? ", "Time? ", "m/s"],
