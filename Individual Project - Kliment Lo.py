@@ -433,6 +433,7 @@ Welcome to the Kinematics Calculator!
 This calculator will help you calculate any variable in Kinematics!
 It saves your calculation history, and allows you to clear it!
 All answers are outputted in the standard units, but you may use any unit when inserting the values!
+Check the Unit Conversion Sheet to see what units are valid! 
 """)
 
 
@@ -475,7 +476,7 @@ def formulaSheet(formula):
     else:
           print("""
     -------------------------------------------------------------------------------------------------
-    |                                   Prefix Symbol Value                                         |    
+    |                                         Prefix Symbol Value                                   |    
     |                                                                                               |      
     |                   Distance                                                                    |    
     |                                                                                               |    
