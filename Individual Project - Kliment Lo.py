@@ -369,25 +369,29 @@ def actuallySolveIt(variable):
         return answer
 
     if int(len(variable)) == 4:
-        getFormula2 = {
-            # Initial Velocity
-            "121": (variable[0] - (0.5 * variable[2] * variable[1] ** 2)) / variable[1],
-            "122": (variable[0] - 2 * variable[1] * variable[2]),
-            "123": (variable[0] / variable[2] * 2 - variable[1]),
-            # Final Velocity
-            "131": (variable[0] - 0.5 * variable[2] * variable[1] ** 2) / variable[1],
-            "132": (variable[0] / variable[2] * 2 - variable[1]),
-            "133": (variable[0] ** 2 + (2 * variable[1] * variable[2])),
-            #Distance
-            "171": variable[0] * variable[1] + 0.5 * variable[2] * variable[1] ** 2,
-            "172": variable[0] * variable[1] - 0.5 * variable[2] * variable[1] ** 2,
-            "173": ((variable[0] + variable[1]) / 2) / variable[2],
-            "174": (variable[0] - variable[1] ** 2) / (2 * variable[2]),
-            #Time
-            "183": variable[1] ** 2 + (2 * variable[2] * variable[0]),
-            "184": variable[1] ** 2 + (2 * variable[2] * variable[0]),
-            "185": variable[0] / ((variable[1] + variable[2]) / 2)
-        }
+        try:
+            getFormula2 = {
+                # Initial Velocity
+                "121": (variable[0] - (0.5 * variable[2] * variable[1] ** 2)) / variable[1],
+                "122": (variable[0] - 2 * variable[1] * variable[2]),
+                "123": (variable[0] / variable[2] * 2 - variable[1]),
+                # Final Velocity
+                "131": (variable[0] - 0.5 * variable[2] * variable[1] ** 2) / variable[1],
+                "132": (variable[0] / variable[2] * 2 - variable[1]),
+                "133": (variable[0] ** 2 + (2 * variable[1] * variable[2])),
+                #Distance
+                "171": variable[0] * variable[1] + 0.5 * variable[2] * variable[1] ** 2,
+                "172": variable[0] * variable[1] - 0.5 * variable[2] * variable[1] ** 2,
+                "173": ((variable[0] + variable[1]) / 2) / variable[2],
+                "174": (variable[0] - variable[1] ** 2) / (2 * variable[2]),
+                #Time
+                "183": variable[1] ** 2 + (2 * variable[2] * variable[0]),
+                "184": variable[1] ** 2 + (2 * variable[2] * variable[0]),
+                "185": variable[0] / ((variable[1] + variable[2]) / 2)
+            }
+        except ZeroDivisionError:
+            print("Values can not be divided by 0! Please try again.")
+            return "zero"
 
         answer = getFormula2[variable[-1]]
         if variable[-1] == "122": # if its this scenario
@@ -420,6 +424,24 @@ def actuallySolveIt(variable):
 
         return answer
 
+def validAnswer(answer):
+    '''
+    checks if its a valid answer or not
+    :param answer: (float) or (str) or (list)
+    :return: (blool)
+    '''
+
+    if isinstance(answer, list):
+        print(f"""Two possible answers were given out. Reinput the values to look for the extraneous root!  
+    {answer[0]} and {answer[1]}""")
+        return False
+    elif answer == "none":
+        print("This calculation was not possible. Please try with other values. ")
+        return False
+    elif answer == "zero":
+        return False
+    else:
+        return True
 
 # --- OUTPUTS --- #
 def intro():
@@ -789,14 +811,7 @@ if __name__ == "__main__":
             equation = selectEquation(choice) # identifies what values thats needed to solvefor the formula they want
             values = getValues(equation) # actually gets the values and the unitConversion ratios
             answer = solveEquation(values) # put values into the equations
-            if isinstance(answer, list):
-                print(f"""Two possible answers were given out. Reinput the values to look for the extraneous root!  
-{answer[0]} and {answer[1]}""")
-            elif answer == "none":
-                print("This calculation was not possible. Please try with other values. ")
-            elif answer == "zero":
-                pass
-            else:
+            if validAnswer(answer):
                 # if its a list or is none, its not going to save it in the history as it is pointless
                 roundedAnswer = round(answer, decimalPlace)  # rounds it
                 displayAnswer(roundedAnswer) # displays the answer as the rounded answer
